@@ -1,0 +1,14 @@
+{
+  "name": "jchip8",
+  "version": "1.0.0",
+  "description": "chip8 emulator",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "author": "Willem Clarke",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}
