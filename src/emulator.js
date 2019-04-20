@@ -1,4 +1,6 @@
-const fs = require('fs');
+const _ = require("lodash");
+const fs = require("fs");
+const { executeOpcode } = require("./opcodes.js");
 
 let emulator = {
   memory: [],
@@ -11,24 +13,28 @@ let emulator = {
   delayTimer: 0, 
   keyInput: [],
   screen: []
-}
+};
+
 
 function loadRom(name) {
-  const romAsHex = fs.readFileSync(`resources/${name}`, "hex")
   // split read file into 8-bit elements
-  emulator.memory = romAsHex.match(/.{1,4}/g)
-}
+  emulator.memory = _.map(fs.readFileSync(`resources/${name}`, "hex").match(/.{1,4}/g), (data) => {
+    return parseInt(data, 16)
+  }) 
+};
 
 function run() {
-  emulator.programCounter += 2
-  
+  const { memory, programCounter } = emulator
+  console.log("started here", emulator.iRegister, emulator.programCounter)
+  executeOpcode(emulator, memory[programCounter])
+  console.log("finished executing first opcode", emulator.iRegister, emulator.programCounter)
+
   setTimeout(() => {
-    console.log(emulator)
-    return run()
-  }, 100)
-}
+    run()
+  }, 3000)
+};
 
 module.exports = {
   loadRom,
   run
-}
+};
