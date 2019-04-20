@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 let emulator = {
   memory: [],
   programCounter: 0,
@@ -11,13 +13,15 @@ let emulator = {
   screen: []
 }
 
+function loadRom(name) {
+  const romAsHex = fs.readFileSync(`resources/${name}`, "hex")
+  // split read file into 8-bit elements
+  emulator.memory = romAsHex.match(/.{1,4}/g)
+}
 
 function run() {
-  emulator = {
-    ...emulator,
-    programCounter: emulator.programCounter + 2
-  }
-
+  emulator.programCounter += 2
+  
   setTimeout(() => {
     console.log(emulator)
     return run()
@@ -25,5 +29,6 @@ function run() {
 }
 
 module.exports = {
+  loadRom,
   run
 }
