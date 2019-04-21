@@ -8,6 +8,11 @@ function executeOpcode(emulator, hex) {
       return
     default:
       console.log("Unknown opcode")
+      //23e6
+    case '2000': //(23e6)
+      emulator.stackPointer += 1
+      emulator.stack.push(emulator.programCounter)
+      emulator.programCounter = and(hex, 0x0fff)
   }
 }
 

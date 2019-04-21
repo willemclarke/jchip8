@@ -25,9 +25,13 @@ function loadRom(name) {
 
 function run() {
   const { memory, programCounter } = emulator
-  console.log("started here", emulator.iRegister, emulator.programCounter)
+  // to gather opcodes === convertedMemory
+  const convertedMemory = emulator.memory.map((dec) => {
+    return dec.toString(16)
+  })
+  console.log("started here", emulator.iRegister, emulator.programCounter, emulator.stackPointer, emulator.stack, emulator.programCounter)
   executeOpcode(emulator, memory[programCounter])
-  console.log("finished executing first opcode", emulator.iRegister, emulator.programCounter)
+  console.log("finished executing first opcode", emulator.iRegister, emulator.stackPointer, emulator.stack, emulator.programCounter)
 
   setTimeout(() => {
     run()
