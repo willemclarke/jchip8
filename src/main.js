@@ -1,4 +1,6 @@
-const { run, loadRom } = require("./emulator.js")
+const { Emulator } = require("./emulator.js")
+const emulator = new Emulator()
 
-loadRom("Tetris")
-run()
+emulator.loadRom("../resources/TETRIS")
+emulator.run()
+

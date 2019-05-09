@@ -1,44 +1,55 @@
 const _ = require("lodash");
 const fs = require("fs");
-const { executeOpcode } = require("./opcodes.js");
+const { and } = require("./utils/hex")
 
-let emulator = {
-  memory: [],
-  programCounter: 0,
-  stackPointer: 0,
-  stack: [],
-  vRegister: [],
-  iRegister: 0,
-  soundTimer: 0,
-  delayTimer: 0, 
-  keyInput: [],
-  screen: []
-};
+class Emulator {
+  constructor() {
+    this.memory = []
+    this.programCounter = 0
+    this.stackPointer = 0
+    this.stack = []
+    this.vRegister = []
+    this.iRegister = 0
+    this.soundTimer = 0
+    this.delayTimer = 0
+    this.keyInput = []
+    this.screen = []
+  }
+  
+  loadRom(path) {
+    // split read file into 8-bit elements
+    this.memory = Uint8Array.from(fs.readFileSync(path)) 
+  }
 
+  run() {
+    console.log(this.programCounter,this.memory.length)
+    const opcode = ((this.memory[this.programCounter]) << 8) | (this.memory[this.programCounter + 1])
+    this.executeOpcode(opcode)
+    this.run()
+  }
 
-function loadRom(name) {
-  // split read file into 8-bit elements
-  emulator.memory = _.map(fs.readFileSync(`resources/${name}`, "hex").match(/.{1,4}/g), (data) => {
-    return parseInt(data, 16)
-  }) 
-};
+  executeOpcode(hex) {
+    const bitShiftedHex = and(hex, 0xf000)
+    console.log(bitShiftedHex, this.programCounter)
+    switch(bitShiftedHex) {
+      case 'a000': //(a2b4)
+        this.iRegister = and(hex, 0x0fff)
+        this.programCounter += 2
+        return
+      case '2000': //(23e6)
+        this.stackPointer += 1
+        this.stack.push(this.programCounter)
+        this.programCounter = and(hex, 0x0fff)
+        return
+      // case '7001': //(case 7xkk)
+      default:
+        console.log("Unknown opcode")
+        //23e6
+    }
+  }
+}
 
-function run() {
-  const { memory, programCounter } = emulator
-  // to gather opcodes === convertedMemory
-  const convertedMemory = emulator.memory.map((dec) => {
-    return dec.toString(16)
-  })
-  console.log("started here", emulator.iRegister, emulator.programCounter, emulator.stackPointer, emulator.stack, emulator.programCounter)
-  executeOpcode(emulator, memory[programCounter])
-  console.log("finished executing first opcode", emulator.iRegister, emulator.stackPointer, emulator.stack, emulator.programCounter)
-
-  setTimeout(() => {
-    run()
-  }, 3000)
-};
 
 module.exports = {
-  loadRom,
-  run
+  Emulator,
 };
