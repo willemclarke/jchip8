@@ -4,11 +4,16 @@
   "description": "chip8 emulator",
   "main": "src/main.js",
   "scripts": {
+    "test": "jest tests",
     "start": "node src/main.js"
   },
   "author": "Willem Clarke",
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0",
+    "prettier": "^1.17.0"
   }
 }
