@@ -9,7 +9,7 @@ class Emulator {
     this.stackPointer = 0;
     this.stack = [];
     this.vRegister = Array(0xf).fill(0);
-    this.iRegister = 0;
+    this.iRegister = Array(0xf).fill(0);
     this.soundTimer = 0;
     this.delayTimer = 0;
     this.keyInput = [];
@@ -37,15 +37,28 @@ class Emulator {
       case 0xa:
         this.iRegister = parsedOpcode.nnn;
         this.programCounter += 2;
+        console.log(this.stack);
+        console.log(this.stackPointer);
         return;
       case 0x2:
         this.stackPointer += 1;
         this.stack.push(this.programCounter);
         this.programCounter = parsedOpcode.nnn;
+        console.log(this.stack);
+        console.log(this.stackPointer);
         return;
       case 0x6:
         this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
         this.programCounter += 2;
+        console.log(this.stack);
+        console.log(this.stackPointer);
+        return;
+      case 0x0:
+        this.programCounter = this.stack.slice(-1)[0];
+        this.stackPointer -= 1;
+        console.log(this.programCounter);
+        console.log(this.stack);
+        console.log(this.stackPointer);
         return;
       default:
         throw new Error("Unknown opcode: " + JSON.stringify(parsedOpcode));
