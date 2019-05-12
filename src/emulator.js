@@ -37,28 +37,19 @@ class Emulator {
       case 0xa:
         this.iRegister = parsedOpcode.nnn;
         this.programCounter += 2;
-        console.log(this.stack);
-        console.log(this.stackPointer);
         return;
       case 0x2:
         this.stackPointer += 1;
         this.stack.push(this.programCounter);
-        this.programCounter = parsedOpcode.nnn;
-        console.log(this.stack);
-        console.log(this.stackPointer);
+        this.programCounter = parsedOpcode.nnn + 2;
         return;
       case 0x6:
         this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
         this.programCounter += 2;
-        console.log(this.stack);
-        console.log(this.stackPointer);
         return;
       case 0x0:
-        this.programCounter = this.stack.slice(-1)[0];
+        this.programCounter = this.stack.pop() + 2;
         this.stackPointer -= 1;
-        console.log(this.programCounter);
-        console.log(this.stack);
-        console.log(this.stackPointer);
         return;
       default:
         throw new Error("Unknown opcode: " + JSON.stringify(parsedOpcode));
@@ -69,3 +60,31 @@ class Emulator {
 module.exports = {
   Emulator
 };
+
+// executing A2B4
+// executing 23E6
+// executing 6A00
+// executing 6019
+// executing 00EE
+// executing 22B6
+// executing 6705
+// executing 6806
+// executing 6904
+// executing 611F
+// executing 6510
+// executing 6207
+// executing 00EE
+// executing 7001
+
+// executing A2B4
+// executing 23E6
+// executing 6019
+// executing 00EE
+// executing 22B6
+// executing 6806
+// executing 6904
+// executing 611F
+// executing 6510
+// executing 6207
+// executing 00EE
+// executing 7001
