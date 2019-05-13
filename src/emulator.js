@@ -1,6 +1,6 @@
-const _ = require("lodash");
-const fs = require("fs");
-const { parseOpcode } = require("./utils");
+const _ = require('lodash');
+const fs = require('fs');
+const { parseOpcode } = require('./utils');
 
 class Emulator {
   constructor() {
@@ -9,7 +9,7 @@ class Emulator {
     this.stackPointer = 0;
     this.stack = [];
     this.vRegister = Array(0xf).fill(0);
-    this.iRegister = Array(0xf).fill(0);
+    this.iRegister = 0;
     this.soundTimer = 0;
     this.delayTimer = 0;
     this.keyInput = [];
@@ -23,16 +23,20 @@ class Emulator {
   }
 
   run() {
-    const rawOpcode =
-      (this.memory[this.programCounter] << 8) |
-      this.memory[this.programCounter + 1];
+    const rawOpcode = (this.memory[this.programCounter] << 8) | this.memory[this.programCounter + 1];
     const parsedOpcode = parseOpcode(rawOpcode);
+    console.log(this.tracer());
     this.executeOpcode(parsedOpcode);
     this.run();
   }
 
+  tracer() {
+    return `PC: ${this.programCounter.toString(16)} stackPointer: ${this.stackPointer.toString(16)} stack: ${this.stack.toString(16)} 
+    vRegiser: ${this.vRegister[0].toString(16)} iRegister: ${this.iRegister.toString(16)}`;
+  }
+
   executeOpcode(parsedOpcode) {
-    console.log("executing " + parsedOpcode.pretty);
+    console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
       case 0xa:
         this.iRegister = parsedOpcode.nnn;
@@ -51,40 +55,15 @@ class Emulator {
         this.programCounter = this.stack.pop() + 2;
         this.stackPointer -= 1;
         return;
+      case 0x7:
+        this.vRegister = this.vRegister[parsedOpcode.x] + parsedOpcode.kk;
+        this.programCounter += 2;
       default:
-        throw new Error("Unknown opcode: " + JSON.stringify(parsedOpcode));
+        throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }
   }
 }
 
 module.exports = {
-  Emulator
+  Emulator,
 };
-
-// executing A2B4
-// executing 23E6
-// executing 6A00
-// executing 6019
-// executing 00EE
-// executing 22B6
-// executing 6705
-// executing 6806
-// executing 6904
-// executing 611F
-// executing 6510
-// executing 6207
-// executing 00EE
-// executing 7001
-
-// executing A2B4
-// executing 23E6
-// executing 6019
-// executing 00EE
-// executing 22B6
-// executing 6806
-// executing 6904
-// executing 611F
-// executing 6510
-// executing 6207
-// executing 00EE
-// executing 7001
