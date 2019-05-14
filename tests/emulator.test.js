@@ -50,8 +50,10 @@ describe('executeOpcode', () => {
     const parsedOpcode = parseOpcode(0x7123);
     const initialState = _.cloneDeep(emulator);
     emulator.executeOpcode(parsedOpcode);
-
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(emulator.vRegister[parsedOpcode.x] + parsedOpcode.kk);
+    console.log(initialState.vRegister[parsedOpcode.x]);
+    console.log(parsedOpcode.kk);
+    console.log(emulator.vRegister[parsedOpcode.x]);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(initialState.vRegister[parsedOpcode.x] + parsedOpcode.kk);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 });

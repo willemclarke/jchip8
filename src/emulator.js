@@ -25,14 +25,16 @@ class Emulator {
   run() {
     const rawOpcode = (this.memory[this.programCounter] << 8) | this.memory[this.programCounter + 1];
     const parsedOpcode = parseOpcode(rawOpcode);
-    console.log(this.tracer());
+    console.log(this.trace());
     this.executeOpcode(parsedOpcode);
     this.run();
   }
 
-  tracer() {
-    return `PC: ${this.programCounter.toString(16)} stackPointer: ${this.stackPointer.toString(16)} stack: ${this.stack.toString(16)} 
-    vRegiser: ${this.vRegister[0].toString(16)} iRegister: ${this.iRegister.toString(16)}`;
+  trace() {
+    const stack = _.map(this.stack, (value) => value.toString(16));
+    const vRegister = _.map(this.vRegister, (value) => value.toString(16));
+    return `PC: ${this.programCounter.toString(16)} iRegister: ${this.iRegister.toString(16)}
+    vRegister: [${vRegister}] stackPointer: ${this.stackPointer.toString(16)} stack: [${stack}]`;
   }
 
   executeOpcode(parsedOpcode) {
@@ -56,8 +58,9 @@ class Emulator {
         this.stackPointer -= 1;
         return;
       case 0x7:
-        this.vRegister = this.vRegister[parsedOpcode.x] + parsedOpcode.kk;
+        this.vRegister[parsedOpcode.x] += parsedOpcode.kk;
         this.programCounter += 2;
+        return;
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }
