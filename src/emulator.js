@@ -61,6 +61,20 @@ class Emulator {
         this.vRegister[parsedOpcode.x] += parsedOpcode.kk;
         this.programCounter += 2;
         return;
+      case 0xd:
+        this.programCounter += 2;
+        return;
+      case 0x3:
+        if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
+          this.programCounter += 4;
+          break;
+        } else {
+          this.programCounter += 2;
+          break;
+        }
+      case 0x1:
+        this.programCounter = parsedOpcode.nnn + 2;
+        return;
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }

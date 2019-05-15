@@ -50,14 +50,42 @@ describe('executeOpcode', () => {
     const parsedOpcode = parseOpcode(0x7123);
     const initialState = _.cloneDeep(emulator);
     emulator.executeOpcode(parsedOpcode);
-    console.log(initialState.vRegister[parsedOpcode.x]);
-    console.log(parsedOpcode.kk);
-    console.log(emulator.vRegister[parsedOpcode.x]);
+
     expect(emulator.vRegister[parsedOpcode.x]).toBe(initialState.vRegister[parsedOpcode.x] + parsedOpcode.kk);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
+
+  test('0x3 - if x = kk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x3123);
+    emulator.vRegister[0x1] = 0x23;
+    const initialState = _.cloneDeep(emulator);
+    emulator.executeOpcode(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(parsedOpcode.kk);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
+
+  test('0x3 - x != kk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x3123);
+    emulator.vRegister[0x1] = 0x21;
+    const initialState = _.cloneDeep(emulator);
+    emulator.executeOpcode(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('1nnn', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x1234);
+    emulator.executeOpcode(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(parsedOpcode.nnn + 2);
+  });
 });
 
-//7xkk - ADD Vx, byte
-// Set Vx = Vx + kk.
-// Adds the value kk to the value of register Vx, then stores the result in Vx.
+// 1nnn - JP addr
+// Jump to location nnn.
+
+// The interpreter sets the program counter to nnn.
