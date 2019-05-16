@@ -47,7 +47,7 @@ class Emulator {
       case 0x2:
         this.stackPointer += 1;
         this.stack.push(this.programCounter);
-        this.programCounter = parsedOpcode.nnn + 2;
+        this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
         return;
       case 0x6:
         this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
@@ -66,14 +66,12 @@ class Emulator {
         return;
       case 0x3:
         if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
-          this.programCounter += 4;
-          break;
+          return (this.programCounter += 4), console.log('HERE COCKSUCKER');
         } else {
-          this.programCounter += 2;
-          break;
+          return (this.programCounter += 2);
         }
       case 0x1:
-        this.programCounter = parsedOpcode.nnn + 2;
+        this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
         return;
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));

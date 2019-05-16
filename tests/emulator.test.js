@@ -21,7 +21,7 @@ describe('executeOpcode', () => {
 
     expect(emulator.stackPointer).toBe(initialState.stackPointer + 1);
     expect(emulator.stack).toEqual(initialState.stack.concat([initialState.programCounter]));
-    expect(emulator.programCounter).toBe(parsedOpcode.nnn + 2);
+    expect(emulator.programCounter).toBe(parsedOpcode.nnn); //removed + 2 after .nnn
   });
 
   test('Ox6', () => {
@@ -62,7 +62,6 @@ describe('executeOpcode', () => {
     const initialState = _.cloneDeep(emulator);
     emulator.executeOpcode(parsedOpcode);
 
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(parsedOpcode.kk);
     expect(emulator.programCounter).toBe(initialState.programCounter + 4);
   });
 
@@ -81,11 +80,12 @@ describe('executeOpcode', () => {
     const parsedOpcode = parseOpcode(0x1234);
     emulator.executeOpcode(parsedOpcode);
 
-    expect(emulator.programCounter).toBe(parsedOpcode.nnn + 2);
+    expect(emulator.programCounter).toBe(parsedOpcode.nnn); //removed + 2 after .nnn
   });
 });
 
-// 1nnn - JP addr
-// Jump to location nnn.
+// Fx33 - LD B, Vx
+// Store BCD representation of Vx in memory locations I, I+1, and I+2.
 
-// The interpreter sets the program counter to nnn.
+// The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I,
+// the tens digit at location I+1, and the ones digit at location I+2.
