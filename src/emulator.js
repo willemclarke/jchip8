@@ -58,7 +58,7 @@ class Emulator {
         this.stackPointer -= 1;
         return;
       case 0x7:
-        this.vRegister[parsedOpcode.x] += parsedOpcode.kk;
+        this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
         this.programCounter += 2;
         return;
       case 0xd:
@@ -72,6 +72,8 @@ class Emulator {
         }
       case 0x1:
         this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
+        return;
+      case 0xc:
         return;
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
