@@ -74,6 +74,7 @@ class Emulator {
         this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
         return;
       case 0xc:
+        this.programCounter += 2;
         return;
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));

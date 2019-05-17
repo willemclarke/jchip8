@@ -82,6 +82,14 @@ describe('executeOpcode', () => {
 
     expect(emulator.programCounter).toBe(parsedOpcode.nnn); //removed + 2 after .nnn
   });
+
+  test('Cxkk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x1234);
+    emulator.executeOpcode(parsedOpcode);
+
+    expect().toBe();
+  });
 });
 
 // Fx33 - LD B, Vx
