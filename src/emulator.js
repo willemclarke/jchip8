@@ -37,45 +37,76 @@ class Emulator {
     vRegister: [${vRegister}] stackPointer: ${this.stackPointer.toString(16)} stack: [${stack}]`;
   }
 
+  _Annn(parsedOpcode) {
+    this.iRegister = parsedOpcode.nnn;
+    this.programCounter += 2;
+  }
+
+  _2nnn(parsedOpcode) {
+    this.stackPointer += 1;
+    this.stack.push(this.programCounter);
+    this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
+  }
+
+  _6xkk(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
+    this.programCounter += 2;
+  }
+
+  _00EE() {
+    this.programCounter = this.stack.pop() + 2;
+    this.stackPointer -= 1;
+  }
+
+  _7xkk(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
+    this.programCounter += 2;
+  }
+
+  _Dxyn() {
+    this.programCounter += 2;
+  }
+
+  _3xkk(parsedOpcode) {
+    if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
+      return (this.programCounter += 4), console.log('HERE COCKSUCKER');
+    } else {
+      return (this.programCounter += 2);
+    }
+  }
+
+  _1nnn(parsedOpcode) {
+    this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
+  }
+
+  _Cxkk(parsedOpcode, randomNumber) {
+    const vxOperation = randomNumber & parsedOpcode.kk;
+    this.vRegister[parsedOpcode.x] = vxOperation; // or this.vRegister = this.vRegister.push(vxOperation)
+    this.programCounter += 2;
+  }
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
       case 0xa:
-        this.iRegister = parsedOpcode.nnn;
-        this.programCounter += 2;
-        return;
+        return this._Annn(parsedOpcode);
       case 0x2:
-        this.stackPointer += 1;
-        this.stack.push(this.programCounter);
-        this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
-        return;
+        return this._Annn(parsedOpcode);
       case 0x6:
-        this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
-        this.programCounter += 2;
-        return;
+        return this._6xkk(parsedOpcode);
       case 0x0:
-        this.programCounter = this.stack.pop() + 2;
-        this.stackPointer -= 1;
-        return;
+        return this._00EE();
       case 0x7:
-        this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
-        this.programCounter += 2;
-        return;
+        return this._7xkk(parsedOpcode);
       case 0xd:
-        this.programCounter += 2;
-        return;
+        return this._Dxyn();
       case 0x3:
-        if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
-          return (this.programCounter += 4), console.log('HERE COCKSUCKER');
-        } else {
-          return (this.programCounter += 2);
-        }
+        return this._3xkk(parsedOpcode);
       case 0x1:
-        this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
-        return;
+        return this._1nnn(parsedOpcode);
       case 0xc:
-        this.programCounter += 2;
-        return;
+        const randomNumber = Math.floor(Math.random() * 256);
+        return this._Cxkk(parsedOpcode, randomNumber);
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }
