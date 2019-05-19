@@ -93,6 +93,26 @@ test('Cxkk', () => {
   expect(emulator.programCounter).toBe(initialState.programCounter + 2);
 });
 
+test('4xkk - if x != kk', () => {
+  const emulator = new Emulator();
+  const parsedOpcode = parseOpcode(0x4123);
+  emulator.vRegister[0x1] = 0x21;
+  const initialState = _.cloneDeep(emulator);
+  emulator._4xkk(parsedOpcode);
+
+  expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+});
+
+test('4xkk - if x === kk', () => {
+  const emulator = new Emulator();
+  const parsedOpcode = parseOpcode(0x4123);
+  emulator.vRegister[0x1] = 0x23;
+  const initialState = _.cloneDeep(emulator);
+  emulator._4xkk(parsedOpcode);
+
+  expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+});
+
 // Fx33 - LD B, Vx
 // Store BCD representation of Vx in memory locations I, I+1, and I+2.
 

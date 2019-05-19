@@ -85,6 +85,14 @@ class Emulator {
     this.programCounter += 2;
   }
 
+  _4xkk(parsedOpcode) {
+    if (this.vRegister[parsedOpcode.x] != parsedOpcode.kk) {
+      return (this.programCounter += 4);
+    } else {
+      return (this.programCounter += 2);
+    }
+  }
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
@@ -107,6 +115,8 @@ class Emulator {
       case 0xc:
         const randomNumber = Math.floor(Math.random() * 256);
         return this._Cxkk(parsedOpcode, randomNumber);
+      case 0x4:
+        return this._4xkk(parsedOpcode);
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }
