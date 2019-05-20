@@ -69,7 +69,7 @@ class Emulator {
 
   _3xkk(parsedOpcode) {
     if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
-      return (this.programCounter += 4), console.log('HERE COCKSUCKER');
+      return (this.programCounter += 4);
     } else {
       return (this.programCounter += 2);
     }
@@ -91,6 +91,14 @@ class Emulator {
     } else {
       return (this.programCounter += 2);
     }
+  }
+
+  _fx15(parsedOpcode) {
+    console.log(this.delayTimer);
+    console.log(this.vRegister[parsedOpcode.x] + ' vRegister.x');
+    this.delayTimer = this.vRegister[parsedOpcode.x];
+    console.log(this.delayTimer);
+    this.programCounter += 2;
   }
 
   executeOpcode(parsedOpcode) {
@@ -117,6 +125,15 @@ class Emulator {
         return this._Cxkk(parsedOpcode, randomNumber);
       case 0x4:
         return this._4xkk(parsedOpcode);
+      case 0xf:
+        switch (parsedOpcode.kk) {
+          case 0x0015:
+            return this._fx15(parsedOpcode);
+        }
+      case 0xe: // currently working here
+        switch (parsedOpcode.kk) {
+          case 0x00a1:
+        }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }
