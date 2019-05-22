@@ -117,17 +117,6 @@ describe('4xkk - Both outcomes', () => {
   });
 });
 
-test('fx15', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0xf015);
-  emulator.vRegister[parsedOpcode.x] = 0x5;
-  const initialState = _.cloneDeep(emulator);
-  emulator._fx15(parsedOpcode);
-
-  expect(emulator.delayTimer).toBe(initialState.vRegister[parsedOpcode.x]);
-  expect(emulator.programCounter).toBe((initialState.programCounter += 2));
-});
-
 describe('ExA1- both outcomes', () => {
   test('ExA1 - key is not pressed', () => {
     const emulator = new Emulator();
@@ -179,7 +168,57 @@ describe('Ex9E - both outcomes', () => {
   });
 });
 
-// Ex9E - SKP Vx
-// Skip next instruction if key with the value of Vx is pressed.
+describe('F opcodes', () => {
+  test('fx15', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xf015);
+    emulator.vRegister[parsedOpcode.x] = 0x5;
+    const initialState = _.cloneDeep(emulator);
+    emulator._Fx15(parsedOpcode);
 
-// Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
+    expect(emulator.delayTimer).toBe(initialState.vRegister[parsedOpcode.x]);
+    expect(emulator.programCounter).toBe((initialState.programCounter += 2));
+  });
+
+  test('Fx07', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xf207);
+    const initialState = _.cloneDeep(emulator);
+    emulator._Fx07(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(emulator.delayTimer);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('Fx1E', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xf21e);
+    emulator.vRegister[parsedOpcode.x] = 0x2;
+    const initialState = _.cloneDeep(emulator);
+    emulator._Fx1E(parsedOpcode);
+
+    expect(emulator.iRegister).toBe(initialState.iRegister + emulator.vRegister[parsedOpcode.x]);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+});
+
+/*
+Dxyn - DRW Vx, Vy, nibble
+Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+
+The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen. See instruction 8xy3 for more information on XOR, and section 2.4, Display, for more information on the Chip-8 screen and sprites.
+
+*/
+
+test('dxyn', () => {
+  const emulator = new Emulator();
+  const parsedOpcode = parseOpcode(0xd123);
+  emulator.iRegister = 0x200;
+  emulator.memory = [...Array(0x200).fill(0x0), Array(parsedOpcode.n).fill(0x1)];
+  emulator.vRegister[parsedOpcode.x] = 0x6;
+  emulator.vRegister[parsedOpcode.y] = 0x7;
+  const initialState = _.cloneDeep(emulator);
+  emulator._DXYN(parsedOpcode);
+
+  expect(emulator.screen).toBe();
+});

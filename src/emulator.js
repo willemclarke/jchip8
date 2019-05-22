@@ -30,7 +30,7 @@ class Emulator {
       E: false,
       F: false,
     };
-    this.screen = [];
+    this.screen = Array(0xf).fill(Array(0xf).fill(0));
   }
 
   loadRom(path) {
@@ -42,7 +42,7 @@ class Emulator {
   run() {
     const rawOpcode = (this.memory[this.programCounter] << 8) | this.memory[this.programCounter + 1];
     const parsedOpcode = parseOpcode(rawOpcode);
-    console.log(this.trace());
+    this.trace();
     this.executeOpcode(parsedOpcode);
     this.run();
   }
@@ -50,8 +50,15 @@ class Emulator {
   trace() {
     const stack = _.map(this.stack, (value) => value.toString(16));
     const vRegister = _.map(this.vRegister, (value) => value.toString(16));
-    return `PC: ${this.programCounter.toString(16)} iRegister: ${this.iRegister.toString(16)}
-    vRegister: [${vRegister}] stackPointer: ${this.stackPointer.toString(16)} stack: [${stack}]`;
+    console.log(
+      `PC: ${this.programCounter.toString(16)}`,
+      `iRegister: ${this.iRegister.toString(16)}`,
+      `vRegister: [${vRegister}]`,
+      `stackPointer: ${this.stackPointer.toString(16)}`,
+      `stack: [${stack}] soundT: ${this.soundTimer.toString(16)}`,
+      `delayT: ${this.delayTimer.toString(16)}`,
+    );
+    console.log(this.screen);
   }
 
   _Annn(parsedOpcode) {
@@ -110,11 +117,6 @@ class Emulator {
     }
   }
 
-  _fx15(parsedOpcode) {
-    this.delayTimer = this.vRegister[parsedOpcode.x];
-    this.programCounter += 2;
-  }
-
   _ExA1(parsedOpcode) {
     if (!this.keyInput[this.vRegister[parsedOpcode.x]]) {
       this.programCounter += 4;
@@ -125,10 +127,25 @@ class Emulator {
 
   _Ex9E(parsedOpcode) {
     if (this.keyInput[this.vRegister[parsedOpcode.x]]) {
-      this.programCounter += 4; // removed return
+      this.programCounter += 4;
     } else {
-      this.programCounter += 2; // removed return
+      this.programCounter += 2;
     }
+  }
+
+  _Fx15(parsedOpcode) {
+    this.delayTimer = this.vRegister[parsedOpcode.x];
+    this.programCounter += 2;
+  }
+
+  _Fx07(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = this.delayTimer;
+    this.programCounter += 2;
+  }
+
+  _Fx1E(parsedOpcode) {
+    this.iRegister = this.iRegister + this.vRegister[parsedOpcode.x];
+    this.programCounter += 2;
   }
 
   executeOpcode(parsedOpcode) {
@@ -137,7 +154,7 @@ class Emulator {
       case 0xa:
         return this._Annn(parsedOpcode);
       case 0x2:
-        return this._Annn(parsedOpcode);
+        return this._2nnn(parsedOpcode);
       case 0x6:
         return this._6xkk(parsedOpcode);
       case 0x0:
@@ -158,15 +175,16 @@ class Emulator {
       case 0xf:
         switch (parsedOpcode.kk) {
           case 0x0015:
-            return this._fx15(parsedOpcode);
+            return this._Fx15(parsedOpcode);
+          case 0x0007:
+            return this._Fx07(parsedOpcode);
+          case 0x001e:
+            return this._Fx1E(parsedOpcode);
         }
       case 0xe:
         switch (parsedOpcode.kk) {
           case 0x00a1:
             return this._ExA1(parsedOpcode);
-        }
-      case 0xe:
-        switch (parsedOpcode.kk) {
           case 0x009e:
             return this._Ex9E(parsedOpcode);
         }
