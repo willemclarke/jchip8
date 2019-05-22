@@ -86,9 +86,9 @@ class Emulator {
 
   _3xkk(parsedOpcode) {
     if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
-      return (this.programCounter += 4);
+      this.programCounter += 4;
     } else {
-      return (this.programCounter += 2);
+      this.programCounter += 2;
     }
   }
 
@@ -104,27 +104,30 @@ class Emulator {
 
   _4xkk(parsedOpcode) {
     if (this.vRegister[parsedOpcode.x] != parsedOpcode.kk) {
-      return (this.programCounter += 4);
+      this.programCounter += 4;
     } else {
-      return (this.programCounter += 2);
+      this.programCounter += 2;
     }
   }
 
   _fx15(parsedOpcode) {
-    // console.log(this.delayTimer);
-    // console.log(this.vRegister[parsedOpcode.x] + ' vRegister.x');
     this.delayTimer = this.vRegister[parsedOpcode.x];
-    // console.log(this.delayTimer);
     this.programCounter += 2;
   }
 
   _ExA1(parsedOpcode) {
-    console.log(this.vRegister[parsedOpcode.x]);
-    console.log(this.keyInput[this.vRegister[parsedOpcode.x]]);
     if (this.keyInput[this.vRegister[parsedOpcode.x]] === false) {
-      return (this.programCounter += 4);
+      this.programCounter += 4;
     } else {
-      return (this.programCounter += 2);
+      this.programCounter += 2;
+    }
+  }
+
+  _Ex9E(parsedOpcode) {
+    if (this.keyInput[this.vRegister[parsedOpcode.x]] === true) {
+      this.programCounter += 4; // removed return
+    } else {
+      this.programCounter += 2; // removed return
     }
   }
 
@@ -157,10 +160,15 @@ class Emulator {
           case 0x0015:
             return this._fx15(parsedOpcode);
         }
-      case 0xe: // currently working here
+      case 0xe:
         switch (parsedOpcode.kk) {
           case 0x00a1:
             return this._ExA1(parsedOpcode);
+        }
+      case 0xe:
+        switch (parsedOpcode.kk) {
+          case 0x009e:
+            return this._Ex9E(parsedOpcode);
         }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));

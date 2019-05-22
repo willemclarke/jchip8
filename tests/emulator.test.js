@@ -153,6 +153,33 @@ describe('ExA1- both outcomes', () => {
   });
 });
 
-// ExA1 - SKNP Vx
-// Skip next instruction if key with the value of Vx is not pressed.
-// Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.//
+describe('Ex9E - both outcomes', () => {
+  test('Ex9E - key is pressed', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xe29e);
+    emulator.vRegister[parsedOpcode.x] = 0x9;
+    emulator.keyInput[emulator.vRegister[parsedOpcode.x]] = true;
+    const initialState = _.cloneDeep(emulator);
+    emulator._Ex9E(parsedOpcode);
+
+    expect(emulator.keyInput[emulator.vRegister[parsedOpcode.x]]).toBe(true);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
+
+  test('Ex9E - key is not pressed', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xe29e);
+    emulator.vRegister[parsedOpcode.x] = 0x9;
+    emulator.keyInput[emulator.vRegister[parsedOpcode.x]] = false;
+    const initialState = _.cloneDeep(emulator);
+    emulator._Ex9E(parsedOpcode);
+
+    expect(emulator.keyInput[emulator.vRegister[parsedOpcode.x]]).toBe(false);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+});
+
+// Ex9E - SKP Vx
+// Skip next instruction if key with the value of Vx is pressed.
+
+// Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
