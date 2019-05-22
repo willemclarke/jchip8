@@ -116,7 +116,7 @@ class Emulator {
   }
 
   _ExA1(parsedOpcode) {
-    if (this.keyInput[this.vRegister[parsedOpcode.x]] === false) {
+    if (!this.keyInput[this.vRegister[parsedOpcode.x]]) {
       this.programCounter += 4;
     } else {
       this.programCounter += 2;
@@ -124,7 +124,7 @@ class Emulator {
   }
 
   _Ex9E(parsedOpcode) {
-    if (this.keyInput[this.vRegister[parsedOpcode.x]] === true) {
+    if (this.keyInput[this.vRegister[parsedOpcode.x]]) {
       this.programCounter += 4; // removed return
     } else {
       this.programCounter += 2; // removed return
