@@ -12,7 +12,24 @@ class Emulator {
     this.iRegister = 0;
     this.soundTimer = 0;
     this.delayTimer = 0;
-    this.keyInput = [];
+    this.keyInput = {
+      0: false,
+      1: false,
+      2: false,
+      3: false,
+      4: false,
+      5: false,
+      6: false,
+      7: false,
+      8: false,
+      9: false,
+      A: false,
+      B: false,
+      C: false,
+      D: false,
+      E: false,
+      F: false,
+    };
     this.screen = [];
   }
 
@@ -94,11 +111,21 @@ class Emulator {
   }
 
   _fx15(parsedOpcode) {
-    console.log(this.delayTimer);
-    console.log(this.vRegister[parsedOpcode.x] + ' vRegister.x');
+    // console.log(this.delayTimer);
+    // console.log(this.vRegister[parsedOpcode.x] + ' vRegister.x');
     this.delayTimer = this.vRegister[parsedOpcode.x];
-    console.log(this.delayTimer);
+    // console.log(this.delayTimer);
     this.programCounter += 2;
+  }
+
+  _ExA1(parsedOpcode) {
+    console.log(this.vRegister[parsedOpcode.x]);
+    console.log(this.keyInput[this.vRegister[parsedOpcode.x]]);
+    if (this.keyInput[this.vRegister[parsedOpcode.x]] === false) {
+      return (this.programCounter += 4);
+    } else {
+      return (this.programCounter += 2);
+    }
   }
 
   executeOpcode(parsedOpcode) {
@@ -133,6 +160,7 @@ class Emulator {
       case 0xe: // currently working here
         switch (parsedOpcode.kk) {
           case 0x00a1:
+            return this._ExA1(parsedOpcode);
         }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));

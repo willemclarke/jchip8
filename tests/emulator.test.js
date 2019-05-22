@@ -54,24 +54,26 @@ test('0x7xkk', () => {
   expect(emulator.programCounter).toBe(initialState.programCounter + 2);
 });
 
-test('0x3xkk - if x = kk', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0x3123);
-  emulator.vRegister[0x1] = 0x23;
-  const initialState = _.cloneDeep(emulator);
-  emulator._3xkk(parsedOpcode);
+describe('3xkk - Both outcomes', () => {
+  test('0x3xkk - if x = kk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x3123);
+    emulator.vRegister[0x1] = 0x23;
+    const initialState = _.cloneDeep(emulator);
+    emulator._3xkk(parsedOpcode);
 
-  expect(emulator.programCounter).toBe(initialState.programCounter + 4);
-});
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
 
-test('0x3xkk - if x != kk', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0x3123);
-  emulator.vRegister[0x1] = 0x21;
-  const initialState = _.cloneDeep(emulator);
-  emulator._3xkk(parsedOpcode);
+  test('0x3xkk - if x != kk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x3123);
+    emulator.vRegister[0x1] = 0x21;
+    const initialState = _.cloneDeep(emulator);
+    emulator._3xkk(parsedOpcode);
 
-  expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
 });
 
 test('1nnn', () => {
@@ -93,24 +95,26 @@ test('Cxkk', () => {
   expect(emulator.programCounter).toBe(initialState.programCounter + 2);
 });
 
-test('4xkk - if x != kk', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0x4123);
-  emulator.vRegister[0x1] = 0x21;
-  const initialState = _.cloneDeep(emulator);
-  emulator._4xkk(parsedOpcode);
+describe('4xkk - Both outcomes', () => {
+  test('4xkk - if x != kk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x4123);
+    emulator.vRegister[0x1] = 0x21;
+    const initialState = _.cloneDeep(emulator);
+    emulator._4xkk(parsedOpcode);
 
-  expect(emulator.programCounter).toBe(initialState.programCounter + 4);
-});
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
 
-test('4xkk - if x === kk', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0x4123);
-  emulator.vRegister[0x1] = 0x23;
-  const initialState = _.cloneDeep(emulator);
-  emulator._4xkk(parsedOpcode);
+  test('4xkk - if x === kk', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x4123);
+    emulator.vRegister[0x1] = 0x23;
+    const initialState = _.cloneDeep(emulator);
+    emulator._4xkk(parsedOpcode);
 
-  expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
 });
 
 test('fx15', () => {
@@ -124,8 +128,31 @@ test('fx15', () => {
   expect(emulator.programCounter).toBe((initialState.programCounter += 2));
 });
 
-// Fx33 - LD B, Vx
-// Store BCD representation of Vx in memory locations I, I+1, and I+2.
+describe('ExA1- both outcomes', () => {
+  test('ExA1 - key is not pressed', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xe2a1);
+    emulator.vRegister[parsedOpcode.x] = 0x9;
+    const initialState = _.cloneDeep(emulator);
+    emulator._ExA1(parsedOpcode);
 
-// The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I,
-// the tens digit at location I+1, and the ones digit at location I+2.
+    expect(emulator.keyInput[emulator.vRegister[parsedOpcode.x]]).toBe(false);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
+
+  test('ExA1 - key is pressed', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xe2a1);
+    emulator.vRegister[parsedOpcode.x] = 0x9;
+    emulator.keyInput[emulator.vRegister[parsedOpcode.x]] = true;
+    const initialState = _.cloneDeep(emulator);
+    emulator._ExA1(parsedOpcode);
+
+    expect(emulator.keyInput[emulator.vRegister[parsedOpcode.x]]).toBe(true);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+});
+
+// ExA1 - SKNP Vx
+// Skip next instruction if key with the value of Vx is not pressed.
+// Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.//
