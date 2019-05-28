@@ -12,7 +12,7 @@ function parseOpcode(opcode) {
   const nnn = opcode & 0x0fff;
   const n = opcode & 0x000f;
   const x = hi & 0x0f;
-  const y = lo & 0xf0;
+  const y = lo & 0xf;
   const kk = opcode & 0x00ff;
   const i = (opcode & 0xf000) >> 12;
 

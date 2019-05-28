@@ -218,7 +218,10 @@ test('dxyn', () => {
   emulator.vRegister[parsedOpcode.x] = 0x6;
   emulator.vRegister[parsedOpcode.y] = 0x7;
   const initialState = _.cloneDeep(emulator);
-  emulator._DXYN(parsedOpcode);
+  emulator._Dxyn(parsedOpcode);
 
-  expect(emulator.screen).toBe();
+  expect(emulator.screen[6][7]).toBe(1);
 });
+
+//XOR
+// Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corrseponding bits from two values, and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.

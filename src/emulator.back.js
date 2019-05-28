@@ -42,26 +42,28 @@ class Emulator {
   run() {
     const rawOpcode = (this.memory[this.programCounter] << 8) | this.memory[this.programCounter + 1];
     const parsedOpcode = parseOpcode(rawOpcode);
-    this.trace(parsedOpcode);
+    // this.trace();
     this.executeOpcode(parsedOpcode);
+    setTimeout(() => {
+      this.run();
+    }, 200);
   }
 
-  trace(parsedOpcode) {
+  trace() {
     const stack = _.map(this.stack, (value) => value.toString(16));
     const vRegister = _.map(this.vRegister, (value) => value.toString(16));
     console.log(
       `PC: ${this.programCounter.toString(16)}`,
-      `Opcode: ${parsedOpcode.pretty}`,
       `iRegister: ${this.iRegister.toString(16)}`,
       `vRegister: [${vRegister}]`,
       `stackPointer: ${this.stackPointer.toString(16)}`,
       `stack: [${stack}] soundT: ${this.soundTimer.toString(16)}`,
       `delayT: ${this.delayTimer.toString(16)}`,
     );
+    // this.drawScreen();
   }
 
   drawScreen() {
-    console.log('drawScreen');
     _.forEach(this.screen, (row) => {
       console.log(row.join(''));
     });
@@ -92,6 +94,7 @@ class Emulator {
     this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
     this.programCounter += 2;
   }
+
   /*
 Dxyn - DRW Vx, Vy, nibble
 Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
@@ -99,67 +102,38 @@ Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collis
 The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen. See instruction 8xy3 for more information on XOR, and section 2.4, Display, for more information on the Chip-8 screen and sprites.
 
 */
-
   _Dxyn(parsedOpcode) {
     console.log(parsedOpcode.pretty);
     const spriteHeight = parsedOpcode.n;
     const spriteWidth = 0x8;
-    const x = this.vRegister[parsedOpcode.x];
-    const y = this.vRegister[parsedOpcode.y];
-    let row, column;
+    const xCoordinate = this.vRegister[parsedOpcode.x];
+    const yCoordinate = this.vRegister[parsedOpcode.y];
+    let flag = 0;
 
-    for (row = 0x0; row < spriteHeight; row++) {
-      const sprite = this.memory[this.iRegister + row];
-      for (column = 0x0; column < spriteWidth; column++) {
-        if ((sprite & 0x80) > 0x0) {
-          const xPosition = x + column;
-          const yPosition = y + row;
-          console.log(yPosition);
+    for (var posY = 0; posY < spriteHeight; posY++) {
+      const sprite = this.memory[this.iRegister + posY];
+      for (var posX = 0; posX < spriteWidth; posX++) {
+        const xInverse = 7 - posX;
+        const mask = 1 << xInverse;
 
-          const current = this.screen[yPosition][xPosition] === 1;
-          this.screen[yPosition][xPosition] = current ^ true;
+        if (sprite & (mask != 0)) {
+          const x = xCoordinate + posX;
+          const y = yCoordinate + posY;
 
-          // if (current) {
-          //   this.vRegister[0xf] = 1;
-          // }
+          if (x < 64 && y < 32) {
+            if (this.screen[x][y] === 1) {
+              flag = 1;
+            }
+
+            this.screen[x][y] = this.screen[x][y] ^ 1;
+          }
         }
       }
     }
+
+    this.vRegister[0xf] = flag;
     this.programCounter += 2;
-    this.drawScreen();
   }
-  // _Dxyn(parsedOpcode) {
-  //   console.log(parsedOpcode.pretty);
-  //   const spriteHeight = parsedOpcode.n;
-  //   const spriteWidth = 0x8;
-  //   const xCoordinate = this.vRegister[parsedOpcode.x];
-  //   const yCoordinate = this.vRegister[parsedOpcode.y];
-  //   let flag = 0;
-
-  //   for (var posY = 0; posY < spriteHeight; posY++) {
-  //     const sprite = this.memory[this.iRegister + posY];
-  //     for (var posX = 0; posX < spriteWidth; posX++) {
-  //       const xInverse = 7 - posX;
-  //       const mask = 1 << xInverse;
-
-  //       if (sprite & (mask != 0)) {
-  //         const x = xCoordinate + posX;
-  //         const y = yCoordinate + posY;
-
-  //         if (x < 64 && y < 32) {
-  //           if (this.screen[x][y] === 1) {
-  //             flag = 1;
-  //           }
-
-  //           this.screen[x][y] = this.screen[x][y] ^ 1;
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   this.vRegister[0xf] = flag;
-  //   this.programCounter += 2;
-  // }
 
   _3xkk(parsedOpcode) {
     if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
@@ -231,8 +205,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
         return this._00EE();
       case 0x7:
         return this._7xkk(parsedOpcode);
-      // case 0xd:
-      //   return this._Dxyn(parsedOpcode);
+      case 0xd:
+        return this._Dxyn(parsedOpcode);
       case 0x3:
         return this._3xkk(parsedOpcode);
       case 0x1:
