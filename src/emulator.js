@@ -42,16 +42,16 @@ class Emulator {
   run() {
     const rawOpcode = (this.memory[this.programCounter] << 8) | this.memory[this.programCounter + 1];
     const parsedOpcode = parseOpcode(rawOpcode);
-    this.trace(parsedOpcode);
+    this.trace();
     this.executeOpcode(parsedOpcode);
   }
 
-  trace(parsedOpcode) {
+  trace() {
     const stack = _.map(this.stack, (value) => value.toString(16));
     const vRegister = _.map(this.vRegister, (value) => value.toString(16));
     console.log(
+      // `Opcode: ${parsedOpcode.pretty}`,
       `PC: ${this.programCounter.toString(16)}`,
-      `Opcode: ${parsedOpcode.pretty}`,
       `iRegister: ${this.iRegister.toString(16)}`,
       `vRegister: [${vRegister}]`,
       `stackPointer: ${this.stackPointer.toString(16)}`,
@@ -219,7 +219,7 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
   }
 
   executeOpcode(parsedOpcode) {
-    // console.log('executing ' + parsedOpcode.pretty);
+    console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
       case 0xa:
         return this._Annn(parsedOpcode);
