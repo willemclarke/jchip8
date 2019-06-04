@@ -238,6 +238,16 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.programCounter += 2;
   }
 
+  _8xy1(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] |= this.vRegister[parsedOpcode.y];
+    this.programCounter += 2;
+  }
+
+  _8xy2(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] &= this.vRegister[parsedOpcode.y];
+    this.programCounter += 2;
+  }
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
@@ -286,6 +296,10 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
         switch (parsedOpcode.n) {
           case 0x0:
             return this._8xy0(parsedOpcode);
+          case 0x0001:
+            return this._8xy1(parsedOpcode);
+          case 0x0002:
+            return this._8xy2(parsedOpcode);
         }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));

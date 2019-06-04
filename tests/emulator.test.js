@@ -168,7 +168,7 @@ describe('Ex9E - both outcomes', () => {
   });
 });
 
-describe('F opcodes', () => {
+describe('F series opcodes', () => {
   test('Fx07', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0xf207);
@@ -215,8 +215,8 @@ describe('F opcodes', () => {
   test('Fx33', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0xf133);
-    const initialState = _.cloneDeep(emulator);
     emulator.vRegister[parsedOpcode.x] = 0x200;
+    const initialState = _.cloneDeep(emulator);
     emulator._Fx33(parsedOpcode);
 
     expect(emulator.memory[emulator.iRegister]).toBe(5);
@@ -226,7 +226,7 @@ describe('F opcodes', () => {
   });
 });
 
-describe('8 - Opcodes', () => {
+describe('8 Series Opcodes', () => {
   test('8xy0', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x8120);
@@ -234,6 +234,34 @@ describe('8 - Opcodes', () => {
     emulator._8xy0(parsedOpcode);
 
     expect(emulator.vRegister[parsedOpcode.x]).toBe(initialState.vRegister[parsedOpcode.y]);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('8xy1', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8541);
+    emulator.vRegister[parsedOpcode.x] = 0x8;
+    emulator.vRegister[parsedOpcode.y] = 0x6;
+    const initialState = _.cloneDeep(emulator);
+    emulator._8xy1(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(
+      initialState.vRegister[parsedOpcode.x] | initialState.vRegister[parsedOpcode.y],
+    );
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('8xy2', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8312);
+    emulator.vRegister[parsedOpcode.x] = 0x7;
+    emulator.vRegister[parsedOpcode.y] = 0x5;
+    const initialState = _.cloneDeep(emulator);
+    emulator._8xy2(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(
+      initialState.vRegister[parsedOpcode.x] & initialState.vRegister[parsedOpcode.y],
+    );
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 });
