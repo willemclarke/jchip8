@@ -218,6 +218,16 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.programCounter += 2;
   }
 
+  _Fx33(parsedOpcode) {
+    const hundreds = Math.floor(this.vRegister[parsedOpcode.x] / 100);
+    const tens = Math.floor((this.vRegister[parsedOpcode.x] % 100) / 10);
+    const ones = (this.vRegister[parsedOpcode.x] % 100) % 10;
+    this.memory[this.iRegister] = hundreds;
+    this.memory[this.iRegister + 1] = tens;
+    this.memory[this.iRegister + 2] = ones;
+    this.programCounter += 2;
+  }
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
@@ -250,6 +260,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
             return this._Fx07(parsedOpcode);
           case 0x001e:
             return this._Fx1E(parsedOpcode);
+          case 0x0033:
+            return this._Fx33(parsedOpcode);
         }
       case 0xe:
         switch (parsedOpcode.kk) {

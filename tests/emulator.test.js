@@ -200,6 +200,19 @@ describe('F opcodes', () => {
     expect(emulator.iRegister).toBe(initialState.iRegister + emulator.vRegister[parsedOpcode.x]);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
+
+  test('Fx33', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xf133);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.x] = 0x200;
+    emulator._Fx33(parsedOpcode);
+
+    expect(emulator.memory[emulator.iRegister]).toBe(5);
+    expect(emulator.memory[emulator.iRegister + 1]).toBe(1);
+    expect(emulator.memory[emulator.iRegister + 2]).toBe(2);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
 });
 
 /*
@@ -210,18 +223,18 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
 
 */
 
-test('dxyn', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0xd123);
-  emulator.iRegister = 0x200;
-  emulator.memory = [...Array(0x200).fill(0x0), Array(parsedOpcode.n).fill(0x1)];
-  emulator.vRegister[parsedOpcode.x] = 0x6;
-  emulator.vRegister[parsedOpcode.y] = 0x7;
-  const initialState = _.cloneDeep(emulator);
-  emulator._Dxyn(parsedOpcode);
+// test('dxyn', () => {
+//   const emulator = new Emulator();
+//   const parsedOpcode = parseOpcode(0xd123);
+//   emulator.iRegister = 0x200;
+//   emulator.memory = [...Array(0x200).fill(0x0), Array(parsedOpcode.n).fill(0x1)];
+//   emulator.vRegister[parsedOpcode.x] = 0x6;
+//   emulator.vRegister[parsedOpcode.y] = 0x7;
+//   const initialState = _.cloneDeep(emulator);
+//   emulator._Dxyn(parsedOpcode);
 
-  expect(emulator.screen[6][7]).toBe(1);
-});
+//   expect(emulator.screen[6][7]).toBe(1);
+// });
 
 //XOR
 // Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corrseponding bits from two values, and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
