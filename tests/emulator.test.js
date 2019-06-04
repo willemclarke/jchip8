@@ -193,8 +193,8 @@ describe('F opcodes', () => {
   test('fx18', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0xf218);
-    const initialState = _.cloneDeep(emulator);
     emulator.vRegister[parsedOpcode.x] = 0x5;
+    const initialState = _.cloneDeep(emulator);
     emulator._Fx18(parsedOpcode);
 
     expect(emulator.soundTimer).toBe(initialState.vRegister[parsedOpcode.x]);
@@ -222,6 +222,18 @@ describe('F opcodes', () => {
     expect(emulator.memory[emulator.iRegister]).toBe(5);
     expect(emulator.memory[emulator.iRegister + 1]).toBe(1);
     expect(emulator.memory[emulator.iRegister + 2]).toBe(2);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+});
+
+describe('8 - Opcodes', () => {
+  test('8xy0', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8120);
+    const initialState = _.cloneDeep(emulator);
+    emulator._8xy0(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(initialState.vRegister[parsedOpcode.y]);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 });
