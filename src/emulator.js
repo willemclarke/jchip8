@@ -187,14 +187,6 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     }
   }
 
-  _ExA1(parsedOpcode) {
-    if (!this.keyInput[this.vRegister[parsedOpcode.x]]) {
-      this.programCounter += 4;
-    } else {
-      this.programCounter += 2;
-    }
-  }
-
   _Ex9E(parsedOpcode) {
     if (this.keyInput[this.vRegister[parsedOpcode.x]]) {
       this.programCounter += 4;
@@ -203,13 +195,26 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     }
   }
 
+  _ExA1(parsedOpcode) {
+    if (!this.keyInput[this.vRegister[parsedOpcode.x]]) {
+      this.programCounter += 4;
+    } else {
+      this.programCounter += 2;
+    }
+  }
+
+  _Fx07(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = this.delayTimer;
+    this.programCounter += 2;
+  }
+
   _Fx15(parsedOpcode) {
     this.delayTimer = this.vRegister[parsedOpcode.x];
     this.programCounter += 2;
   }
 
-  _Fx07(parsedOpcode) {
-    this.vRegister[parsedOpcode.x] = this.delayTimer;
+  _Fx18(parsedOpcode) {
+    this.soundTimer = this.vRegister[parsedOpcode.x];
     this.programCounter += 2;
   }
 
@@ -225,11 +230,6 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.memory[this.iRegister] = hundreds;
     this.memory[this.iRegister + 1] = tens;
     this.memory[this.iRegister + 2] = ones;
-    this.programCounter += 2;
-  }
-
-  _Fx18(parsedOpcode) {
-    this.soundTimer = this.vRegister[parsedOpcode.x];
     this.programCounter += 2;
   }
 
