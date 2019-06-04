@@ -169,6 +169,16 @@ describe('Ex9E - both outcomes', () => {
 });
 
 describe('F opcodes', () => {
+  test('Fx07', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xf207);
+    const initialState = _.cloneDeep(emulator);
+    emulator._Fx07(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(emulator.delayTimer);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
   test('fx15', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0xf015);
@@ -180,13 +190,14 @@ describe('F opcodes', () => {
     expect(emulator.programCounter).toBe((initialState.programCounter += 2));
   });
 
-  test('Fx07', () => {
+  test('fx18', () => {
     const emulator = new Emulator();
-    const parsedOpcode = parseOpcode(0xf207);
+    const parsedOpcode = parseOpcode(0xf218);
     const initialState = _.cloneDeep(emulator);
-    emulator._Fx07(parsedOpcode);
+    emulator.vRegister[parsedOpcode.x] = 0x5;
+    emulator._Fx18(parsedOpcode);
 
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(emulator.delayTimer);
+    expect(emulator.soundTimer).toBe(initialState.vRegister[parsedOpcode.x]);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
@@ -211,17 +222,6 @@ describe('F opcodes', () => {
     expect(emulator.memory[emulator.iRegister]).toBe(5);
     expect(emulator.memory[emulator.iRegister + 1]).toBe(1);
     expect(emulator.memory[emulator.iRegister + 2]).toBe(2);
-    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
-  });
-
-  test('fx18', () => {
-    const emulator = new Emulator();
-    const parsedOpcode = parseOpcode(0xf218);
-    const initialState = _.cloneDeep(emulator);
-    emulator.vRegister[parsedOpcode.x] = 0x5;
-    emulator._Fx18(parsedOpcode);
-
-    expect(emulator.soundTimer).toBe(emulator.vRegister[parsedOpcode.x]);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 });

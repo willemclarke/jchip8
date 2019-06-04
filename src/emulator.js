@@ -267,6 +267,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
             return this._Fx1E(parsedOpcode);
           case 0x0033:
             return this._Fx33(parsedOpcode);
+          case 0x0018:
+            return this._Fx18(parsedOpcode);
         }
       case 0xe:
         switch (parsedOpcode.kk) {
