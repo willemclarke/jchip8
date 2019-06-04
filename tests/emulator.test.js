@@ -213,6 +213,17 @@ describe('F opcodes', () => {
     expect(emulator.memory[emulator.iRegister + 2]).toBe(2);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
+
+  test('fx18', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xf218);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.x] = 0x5;
+    emulator._Fx18(parsedOpcode);
+
+    expect(emulator.soundTimer).toBe(emulator.vRegister[parsedOpcode.x]);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
 });
 
 /*

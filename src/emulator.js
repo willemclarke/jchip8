@@ -228,6 +228,11 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.programCounter += 2;
   }
 
+  _Fx18(parsedOpcode) {
+    this.soundTimer = this.vRegister[parsedOpcode.x];
+    this.programCounter += 2;
+  }
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
