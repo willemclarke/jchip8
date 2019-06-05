@@ -253,7 +253,16 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.programCounter += 2;
   }
 
-  _8xy4(parsedOpcode) {}
+  _8xy4(parsedOpcode) {
+    const result = this.vRegister[parsedOpcode.x] + this.vRegister[parsedOpcode.y];
+    if (result > 255) {
+      this.vRegister[0xf] = 1;
+    } else {
+      this.vRegister[0xf] = 0;
+    }
+    this.vRegister[parsedOpcode.x] = result & 0xff;
+    this.programCounter += 2;
+  }
 
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
@@ -308,6 +317,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
           case 0x0002:
             return this._8xy2(parsedOpcode);
           case 0x0003:
+            return this._8xy3(parsedOpcode);
+          case 0x0004:
             return this._8xy3(parsedOpcode);
         }
       default:
