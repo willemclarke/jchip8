@@ -264,6 +264,20 @@ describe('8 Series Opcodes', () => {
     );
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
+
+  test('8xy3', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8673);
+    emulator.vRegister[parsedOpcode.x] = 0x7;
+    emulator.vRegister[parsedOpcode.y] = 0x5;
+    const initialState = _.cloneDeep(emulator);
+    emulator._8xy3(parsedOpcode);
+
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(
+      initialState.vRegister[parsedOpcode.x] ^ initialState.vRegister[parsedOpcode.y],
+    );
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
 });
 
 /*
