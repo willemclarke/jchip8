@@ -265,7 +265,7 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
   }
 
   _8xy5(parsedOpcode) {
-    const result = this.vRegister[parsedOpcode.y] - this.vRegister[parsedOpcode.x];
+    const result = this.vRegister[parsedOpcode.x] - this.vRegister[parsedOpcode.y];
     if (this.vRegister[parsedOpcode.x] > this.vRegister[parsedOpcode.y]) {
       this.vRegister[0xf] = 1;
     } else {

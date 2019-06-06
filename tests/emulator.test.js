@@ -312,7 +312,7 @@ describe('8 Series Opcodes', () => {
     emulator._8xy5(parsedOpcode);
 
     expect(emulator.vRegister[0xf]).toBe(1);
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(-0x4b);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(0x4b);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
@@ -325,7 +325,7 @@ describe('8 Series Opcodes', () => {
     emulator._8xy5(parsedOpcode);
 
     expect(emulator.vRegister[0xf]).toBe(0);
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(0x4b);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(-0x4b);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
