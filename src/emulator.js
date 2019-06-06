@@ -264,6 +264,17 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.programCounter += 2;
   }
 
+  _8xy5(parsedOpcode) {
+    const result = this.vRegister[parsedOpcode.y] - this.vRegister[parsedOpcode.x];
+    if (this.vRegister[parsedOpcode.x] > this.vRegister[parsedOpcode.y]) {
+      this.vRegister[0xf] = 1;
+    } else {
+      this.vRegister[0xf] = 0;
+    }
+    this.vRegister[parsedOpcode.x] = result;
+    this.programCounter += 2;
+  }
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
