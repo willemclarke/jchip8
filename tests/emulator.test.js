@@ -329,16 +329,26 @@ describe('8 Series Opcodes', () => {
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
-  test('8xy6', () => {
+  test('8xy6 --- if LSbit === 1, VF = 1', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x8676);
     const initialState = _.cloneDeep(emulator);
-    emulator.vRegister[parsedOpcode.x] = 0x7d;
-    emulator.vRegister[parsedOpcode.y] = 0xc8;
+    emulator.vRegister[parsedOpcode.x] = 0x1; // 0x1 & 1 = 1
     emulator._8xy6(parsedOpcode);
 
-    expect().toBe();
-    expect().toBe();
+    expect(emulator.vRegister[0xf]).toBe(0x1);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('8xy6 --- if LSbit === 0, VF = 0', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8676);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.x] = 0x2; // 0x2 & 1 = 0
+    emulator._8xy6(parsedOpcode);
+
+    expect(emulator.vRegister[0xf]).toBe(0);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 });
 
