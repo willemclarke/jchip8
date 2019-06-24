@@ -5,7 +5,9 @@
   "main": "src/main.js",
   "scripts": {
     "test": "jest tests",
-    "start": "node src/main.js"
+    "bundle": "browserify src/main.js -o dist/main.js",
+    "serve": "serve dist",
+    "develop": "nodemon --ignore dist/ --exec 'npm run bundle && npm run serve'"
   },
   "author": "Willem Clarke",
   "license": "ISC",
@@ -13,7 +15,10 @@
     "lodash": "^4.17.11"
   },
   "devDependencies": {
+    "serve": "^11.0.2",
+    "browserify": "^16.2.3",
     "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
     "prettier": "^1.17.0"
   }
 }

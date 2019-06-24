@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>chip8.js</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style type="text/css">
+      canvas {
+        display:block;
+        border: 10px solid;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="jumbotron mt-5">
+            <h1 class="display-4">jchip8</h1>
+            <p class="lead">This is a CHIP-8 emulator, written in Javascript.</p>
+            
+            <hr class="my-4">
+            <div class="row no-gutters">
+              <div class="col-3">
+                <select class="form-control" id="rom_selector">
+                  <option>Select ROM</option>
+                  <option>15PUZZLE</option>
+                  <option>BLINKY</option>
+                  <option>BLITZ</option>
+                  <option>BRIX</option>
+                  <option>CONNECT4</option>
+                  <option>GUESS</option>
+                  <option>HIDDEN</option>
+                  <option>INVADERS</option>
+                  <option>KALEID</option>
+                  <option>MAZE</option>
+                  <option>MERLIN</option>
+                  <option>MISSILE</option>
+                  <option>PONG</option>
+                  <option>PONG2</option>
+                  <option>PUZZLE</option>
+                  <option>SYZYGY</option>
+                  <option>TANK</option>
+                  <option>TETRIS</option>
+                  <option>TICTAC</option>
+                  <option>UFO</option>
+                  <option>VBRIX</option>
+                  <option>VERS</option>
+                  <option>WIPEOFF</option>
+                </select>
+              </div>
+              <div class="ml-auto">
+                <button class="btn btn-outline-secondary">Source</button>
+                <button class="btn btn-outline-secondary">Tests</button>
+                <button class="btn btn-outline-secondary">What is CHIP-8</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <canvas></canvas>
+        </div>
+      </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
