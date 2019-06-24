@@ -337,6 +337,7 @@ describe('8 Series Opcodes', () => {
     emulator._8xy6(parsedOpcode);
 
     expect(emulator.vRegister[0xf]).toBe(0x1);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(0.5); //0x1 / 2 =  0.5
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
@@ -348,6 +349,33 @@ describe('8 Series Opcodes', () => {
     emulator._8xy6(parsedOpcode);
 
     expect(emulator.vRegister[0xf]).toBe(0);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(1); //0x2 / 2 = 1
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('8xy7 --- if vy > vx VF = 1', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8677);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.y] = 0xc8;
+    emulator.vRegister[parsedOpcode.x] = 0x7d;
+    emulator._8xy7(parsedOpcode);
+
+    expect(emulator.vRegister[0xf]).toBe(1);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(0x4b);
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+
+  test('8xy7 --- if vy < vx VF = 0', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x8677);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.y] = 0x7d;
+    emulator.vRegister[parsedOpcode.x] = 0xc8;
+    emulator._8xy7(parsedOpcode);
+
+    expect(emulator.vRegister[0xf]).toBe(0);
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(-0x4b);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 });

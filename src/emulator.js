@@ -276,13 +276,24 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
   }
 
   _8xy6(parsedOpcode) {
-    const result = this.vRegister[parsedOpcode.x] & 1;
-    if (result === 1) {
+    const leastSignificantBit = this.vRegister[parsedOpcode.x] & 1;
+    if (leastSignificantBit === 1) {
       this.vRegister[0xf] = 1;
     } else {
       this.vRegister[0xf] = 0;
     }
     this.vRegister[parsedOpcode.x] /= 2;
+    this.programCounter += 2;
+  }
+
+  _8xy7(parsedOpcode) {
+    const result = this.vRegister[parsedOpcode.y] - this.vRegister[parsedOpcode.x];
+    if (this.vRegister[parsedOpcode.y] > this.vRegister[parsedOpcode.x]) {
+      this.vRegister[0xf] = 1;
+    } else {
+      this.vRegister[0xf] = 0;
+    }
+    this.vRegister[parsedOpcode.x] = result;
     this.programCounter += 2;
   }
 
@@ -346,6 +357,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
             return this._8xy5(parsedOpcode);
           case 0x0006:
             return this._8xy6(parsedOpcode);
+          case 0x0007:
+            return this._8xy7(parsedOpcode);
         }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
