@@ -4,6 +4,10 @@ const { parseOpcode } = require('./utils');
 
 class Emulator {
   constructor() {
+    this.reset();
+  }
+
+  reset() {
     this.memory = [];
     this.programCounter = 0x200;
     this.stackPointer = 0;
@@ -30,13 +34,17 @@ class Emulator {
       E: false,
       F: false,
     };
-    this.screen = Array(32).fill(Array(64).fill(0));
+    this.scale = 10;
+    this.width = 64;
+    this.height = 32;
+    this.screen = Array(this.height).fill(Array(this.width).fill(0));
   }
 
-  loadRom(path) {
-    const reserved = Array(0x200).fill(0x0);
-    const rom = Array.from(Uint8Array.from(fs.readFileSync(path)));
-    this.memory = reserved.concat(rom);
+  loadRom(rom) {
+    this.memory = Array(0x200)
+      .fill(0x0)
+      .concat(Array.from(rom));
+    console.log(this.memory);
   }
 
   run() {
@@ -58,13 +66,6 @@ class Emulator {
       `stack: [${stack}] soundT: ${this.soundTimer.toString(16)}`,
       `delayT: ${this.delayTimer.toString(16)}`,
     );
-  }
-
-  drawScreen() {
-    console.log('drawScreen');
-    _.forEach(this.screen, (row) => {
-      console.log(row.join(''));
-    });
   }
 
   _Annn(parsedOpcode) {
@@ -101,7 +102,6 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
 */
 
   _Dxyn(parsedOpcode) {
-    console.log(parsedOpcode.pretty);
     const spriteHeight = parsedOpcode.n;
     const spriteWidth = 0x8;
     const x = this.vRegister[parsedOpcode.x];
@@ -114,52 +114,19 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
         if ((sprite & 0x80) > 0x0) {
           const xPosition = x + column;
           const yPosition = y + row;
-          console.log(yPosition);
 
           const current = this.screen[yPosition][xPosition] === 1;
           this.screen[yPosition][xPosition] = current ^ true;
 
-          // if (current) {
-          //   this.vRegister[0xf] = 1;
-          // }
+          if (current) {
+            this.vRegister[0xf] = 1;
+          }
         }
       }
     }
+
     this.programCounter += 2;
-    this.drawScreen();
   }
-  // _Dxyn(parsedOpcode) {
-  //   console.log(parsedOpcode.pretty);
-  //   const spriteHeight = parsedOpcode.n;
-  //   const spriteWidth = 0x8;
-  //   const xCoordinate = this.vRegister[parsedOpcode.x];
-  //   const yCoordinate = this.vRegister[parsedOpcode.y];
-  //   let flag = 0;
-
-  //   for (var posY = 0; posY < spriteHeight; posY++) {
-  //     const sprite = this.memory[this.iRegister + posY];
-  //     for (var posX = 0; posX < spriteWidth; posX++) {
-  //       const xInverse = 7 - posX;
-  //       const mask = 1 << xInverse;
-
-  //       if (sprite & (mask != 0)) {
-  //         const x = xCoordinate + posX;
-  //         const y = yCoordinate + posY;
-
-  //         if (x < 64 && y < 32) {
-  //           if (this.screen[x][y] === 1) {
-  //             flag = 1;
-  //           }
-
-  //           this.screen[x][y] = this.screen[x][y] ^ 1;
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   this.vRegister[0xf] = flag;
-  //   this.programCounter += 2;
-  // }
 
   _3xkk(parsedOpcode) {
     if (this.vRegister[parsedOpcode.x] === parsedOpcode.kk) {
@@ -300,7 +267,6 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
   _8xyE(parsedOpcode) {}
 
   executeOpcode(parsedOpcode) {
-    console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {
       case 0xa:
         return this._Annn(parsedOpcode);
@@ -312,8 +278,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
         return this._00EE();
       case 0x7:
         return this._7xkk(parsedOpcode);
-      // case 0xd:
-      //   return this._Dxyn(parsedOpcode);
+      case 0xd:
+        return this._Dxyn(parsedOpcode);
       case 0x3:
         return this._3xkk(parsedOpcode);
       case 0x1:
@@ -368,6 +334,4 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
   }
 }
 
-module.exports = {
-  Emulator,
-};
+module.exports = Emulator;
