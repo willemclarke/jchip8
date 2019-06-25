@@ -1,4 +1,4 @@
-const { Emulator } = require('../src/emulator.js');
+const Emulator = require('../src/emulator.js');
 const { parseOpcode } = require('../src/utils.js');
 const _ = require('lodash');
 
