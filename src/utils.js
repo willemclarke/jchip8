@@ -11,8 +11,8 @@ function parseOpcode(opcode) {
   const lo = opcode & 0x00ff;
   const nnn = opcode & 0x0fff;
   const n = opcode & 0x000f;
-  const x = hi & 0x0f;
-  const y = lo & 0xf;
+  const x = (opcode & 0x0f00) >> 8;
+  const y = (opcode & 0x00f0) >> 4;
   const kk = opcode & 0x00ff;
   const i = (opcode & 0xf000) >> 12;
 
