@@ -297,6 +297,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
     this.programCounter += 2;
   }
 
+  _8xyE(parsedOpcode) {}
+
   executeOpcode(parsedOpcode) {
     console.log('executing ' + parsedOpcode.pretty);
     switch (parsedOpcode.i) {

@@ -332,24 +332,24 @@ describe('8 Series Opcodes', () => {
   test('8xy6 --- if LSbit === 1, VF = 1', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x8676);
-    const initialState = _.cloneDeep(emulator);
     emulator.vRegister[parsedOpcode.x] = 0x1; // 0x1 & 1 = 1
+    const initialState = _.cloneDeep(emulator);
     emulator._8xy6(parsedOpcode);
 
     expect(emulator.vRegister[0xf]).toBe(0x1);
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(0.5); //0x1 / 2 =  0.5
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(initialState.vRegister[parsedOpcode.x] / 2);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
   test('8xy6 --- if LSbit === 0, VF = 0', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x8676);
-    const initialState = _.cloneDeep(emulator);
     emulator.vRegister[parsedOpcode.x] = 0x2; // 0x2 & 1 = 0
+    const initialState = _.cloneDeep(emulator);
     emulator._8xy6(parsedOpcode);
 
     expect(emulator.vRegister[0xf]).toBe(0);
-    expect(emulator.vRegister[parsedOpcode.x]).toBe(1); //0x2 / 2 = 1
+    expect(emulator.vRegister[parsedOpcode.x]).toBe(initialState.vRegister[parsedOpcode.x] / 2);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
