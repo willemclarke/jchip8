@@ -6,13 +6,13 @@
 // a2b4
 
 function parseOpcode(opcode) {
-  const pretty = ('0000' + opcode.toString(16).toUpperCase()).slice(-4);
+  const pretty = ("0000" + opcode.toString(16).toUpperCase()).slice(-4);
   const hi = (opcode & 0xff00) >> 8;
   const lo = opcode & 0x00ff;
   const nnn = opcode & 0x0fff;
   const n = opcode & 0x000f;
-  const x = hi & 0x0f;
-  const y = lo & 0xf;
+  const x = (opcode & 0x0f00) >> 8;
+  const y = (opcode & 0x00f0) >> 4;
   const kk = opcode & 0x00ff;
   const i = (opcode & 0xf000) >> 12;
 
@@ -26,10 +26,10 @@ function parseOpcode(opcode) {
     kk: kk,
     raw: opcode,
     i: i,
-    pretty: pretty,
+    pretty: pretty
   };
 }
 
 module.exports = {
-  parseOpcode,
+  parseOpcode
 };

@@ -7,7 +7,7 @@
     "test": "jest tests",
     "bundle": "browserify src/main.js -o dist/main.js",
     "serve": "serve dist",
-    "develop": "nodemon --ignore dist/ --exec 'npm run bundle'"
+    "develop": "nodemon --ignore dist/ --exec 'npm run bundle && npm run serve'"
   },
   "author": "Willem Clarke",
   "license": "ISC",
