@@ -1,6 +1,6 @@
-const _ = require("lodash");
-const fs = require("fs");
-const { parseOpcode } = require("./utils");
+const _ = require('lodash');
+const fs = require('fs');
+const { parseOpcode } = require('./utils');
 
 class Emulator {
   constructor() {
@@ -32,12 +32,12 @@ class Emulator {
       C: false,
       D: false,
       E: false,
-      F: false
+      F: false,
     };
     this.scale = 10;
     this.width = 64;
     this.height = 32;
-    this.screen = [...Array(this.width)].map(e => Array(this.height).fill(0));
+    this.screen = [...Array(this.width)].map((e) => Array(this.height).fill(0));
   }
 
   loadRom(rom) {
@@ -47,17 +47,15 @@ class Emulator {
   }
 
   run() {
-    const rawOpcode =
-      (this.memory[this.programCounter] << 8) |
-      this.memory[this.programCounter + 1];
+    const rawOpcode = (this.memory[this.programCounter] << 8) | this.memory[this.programCounter + 1];
     const parsedOpcode = parseOpcode(rawOpcode);
     this.trace(parsedOpcode);
     this.executeOpcode(parsedOpcode);
   }
 
   trace(parsedOpcode) {
-    const stack = _.map(this.stack, value => value.toString(16));
-    const vRegister = _.map(this.vRegister, value => value.toString(16));
+    const stack = _.map(this.stack, (value) => value.toString(16));
+    const vRegister = _.map(this.vRegister, (value) => value.toString(16));
     console.log(
       `Opcode: ${parsedOpcode.pretty}`,
       `PC: ${this.programCounter.toString(16)}`,
@@ -65,7 +63,7 @@ class Emulator {
       `vRegister: [${vRegister}]`,
       `stackPointer: ${this.stackPointer.toString(16)}`,
       `stack: [${stack}] soundT: ${this.soundTimer.toString(16)}`,
-      `delayT: ${this.delayTimer.toString(16)}`
+      `delayT: ${this.delayTimer.toString(16)}`,
     );
   }
 
@@ -100,8 +98,7 @@ class Emulator {
   }
 
   _7xkk(parsedOpcode) {
-    this.vRegister[parsedOpcode.x] =
-      (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
+    this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
     this.programCounter += 2;
   }
 
@@ -131,9 +128,7 @@ class Emulator {
 
       for (col = 0; col < width; col++) {
         if ((sprite & 0x80) > 0) {
-          this.screen[this.vRegister[parsedOpcode.y] + row][
-            this.vRegister[parsedOpcode.x] + col
-          ] = 1;
+          this.screen[this.vRegister[parsedOpcode.y] + row][this.vRegister[parsedOpcode.x] + col] = 1;
 
           const int_x = (this.vRegister[parsedOpcode.x] + col) & 0xff;
           const int_y = (this.vRegister[parsedOpcode.y] + row) & 0xff;
@@ -248,8 +243,7 @@ class Emulator {
   }
 
   _8xy4(parsedOpcode) {
-    const result =
-      this.vRegister[parsedOpcode.x] + this.vRegister[parsedOpcode.y];
+    const result = this.vRegister[parsedOpcode.x] + this.vRegister[parsedOpcode.y];
     if (result > 255) {
       this.vRegister[0xf] = 1;
     } else {
@@ -260,8 +254,7 @@ class Emulator {
   }
 
   _8xy5(parsedOpcode) {
-    const result =
-      this.vRegister[parsedOpcode.x] - this.vRegister[parsedOpcode.y];
+    const result = this.vRegister[parsedOpcode.x] - this.vRegister[parsedOpcode.y];
     if (this.vRegister[parsedOpcode.x] > this.vRegister[parsedOpcode.y]) {
       this.vRegister[0xf] = 1;
     } else {
@@ -283,8 +276,7 @@ class Emulator {
   }
 
   _8xy7(parsedOpcode) {
-    const result =
-      this.vRegister[parsedOpcode.y] - this.vRegister[parsedOpcode.x];
+    const result = this.vRegister[parsedOpcode.y] - this.vRegister[parsedOpcode.x];
     if (this.vRegister[parsedOpcode.y] > this.vRegister[parsedOpcode.x]) {
       this.vRegister[0xf] = 1;
     } else {
@@ -364,7 +356,7 @@ class Emulator {
             return this._8xy7(parsedOpcode);
         }
       default:
-        throw new Error("Unknown opcode: " + JSON.stringify(parsedOpcode));
+        throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
     }
   }
 }
