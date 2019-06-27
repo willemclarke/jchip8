@@ -378,6 +378,52 @@ describe('8 Series Opcodes', () => {
     expect(emulator.vRegister[parsedOpcode.x]).toBe(-0x4b);
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
+
+  // test('8xyE --- if MSb of vx === 1, VF = 1', () => {
+  //   const emulator = new Emulator();
+  //   const parsedOpcode = parseOpcode(0x867e);
+  //   const initialState = _.cloneDeep(emulator);
+  //   emulator._8xyE(parsedOpcode);
+
+  //   expect().toBe();
+  //   expect().toBe();
+  //   expect().toBe();
+  // });
+
+  // test('8xyE --- if MSb of vx === 0, VF = 0', () => {
+  //   const emulator = new Emulator();
+  //   const parsedOpcode = parseOpcode(0x867e);
+  //   const initialState = _.cloneDeep(emulator);
+  //   emulator._8xyE(parsedOpcode);
+
+  //   expect().toBe();
+  //   expect().toBe();
+  //   expect().toBe();
+  // });
+});
+
+describe('9 Series Opcodes', () => {
+  test('9xy0 --- if Vx != Vy - PC + 4', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x9450);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.x] = 0x1;
+    emulator.vRegister[parsedOpcode.y] = 0x3;
+    emulator._9xy0(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
+
+  test('9xy0 --- if Vx === Vy, PC + 2', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x9450);
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[parsedOpcode.x] = 0x3;
+    emulator.vRegister[parsedOpcode.y] = 0x3;
+    emulator._9xy0(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
 });
 
 /*

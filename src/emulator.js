@@ -288,6 +288,14 @@ class Emulator {
 
   _8xyE(parsedOpcode) {}
 
+  _9xy0(parsedOpcode) {
+    if (this.vRegister[parsedOpcode.x] != this.vRegister[parsedOpcode.y]) {
+      this.programCounter += 4;
+    } else {
+      this.programCounter += 2;
+    }
+  }
+
   executeOpcode(parsedOpcode) {
     switch (parsedOpcode.i) {
       case 0xa:
