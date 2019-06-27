@@ -203,7 +203,9 @@ class Emulator {
     this.programCounter += 2;
   }
 
-  _Bnnn(parsedOpcode) {}
+  _Bnnn(parsedOpcode) {
+    this.programCounter = parsedOpcode.nnn + this.vRegister[0x0];
+  }
 
   _Cxkk(parsedOpcode, randomNumber) {
     const vxOperation = randomNumber & parsedOpcode.kk;

@@ -309,7 +309,17 @@ describe('8 Series Opcodes', () => {
     expect(emulator.programCounter).toBe(initialState.programCounter + 2);
   });
 
-  test('Bnnn', () => {});
+  test('Bnnn', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0xb123); // = 291 === 123
+    const initialState = _.cloneDeep(emulator);
+    emulator.vRegister[0x0] = 0x33;
+    console.log(emulator.vRegister[0x0]);
+    console.log(parsedOpcode.nnn);
+    emulator._Bnnn(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(parsedOpcode.nnn + emulator.vRegister[0x0]);
+  });
 
   test('Cxkk', () => {
     const emulator = new Emulator();
