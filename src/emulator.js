@@ -297,12 +297,6 @@ class Emulator {
 
   executeOpcode(parsedOpcode) {
     switch (parsedOpcode.i) {
-      case 0xa:
-        return this._Annn(parsedOpcode);
-      case 0x2:
-        return this._2nnn(parsedOpcode);
-      case 0x6:
-        return this._6xkk(parsedOpcode);
       case 0x0:
         switch (parsedOpcode.kk) {
           case 0x00e0:
@@ -310,39 +304,18 @@ class Emulator {
           case 0x00ee:
             return this._00EE();
         }
-      case 0x7:
-        return this._7xkk(parsedOpcode);
-      case 0xd:
-        return this._Dxyn(parsedOpcode);
-      case 0x3:
-        return this._3xkk(parsedOpcode);
       case 0x1:
         return this._1nnn(parsedOpcode);
-      case 0xc:
-        const randomNumber = Math.floor(Math.random() * 256);
-        return this._Cxkk(parsedOpcode, randomNumber);
+      case 0x2:
+        return this._2nnn(parsedOpcode);
+      case 0x3:
+        return this._3xkk(parsedOpcode);
       case 0x4:
         return this._4xkk(parsedOpcode);
-      case 0xf:
-        switch (parsedOpcode.kk) {
-          case 0x0015:
-            return this._Fx15(parsedOpcode);
-          case 0x0007:
-            return this._Fx07(parsedOpcode);
-          case 0x001e:
-            return this._Fx1E(parsedOpcode);
-          case 0x0033:
-            return this._Fx33(parsedOpcode);
-          case 0x0018:
-            return this._Fx18(parsedOpcode);
-        }
-      case 0xe:
-        switch (parsedOpcode.kk) {
-          case 0x00a1:
-            return this._ExA1(parsedOpcode);
-          case 0x009e:
-            return this._Ex9E(parsedOpcode);
-        }
+      case 0x6:
+        return this._6xkk(parsedOpcode);
+      case 0x7:
+        return this._7xkk(parsedOpcode);
       case 0x8:
         switch (parsedOpcode.n) {
           case 0x0:
@@ -361,6 +334,35 @@ class Emulator {
             return this._8xy6(parsedOpcode);
           case 0x0007:
             return this._8xy7(parsedOpcode);
+        }
+      case 0x9:
+        return this._9xy0(parsedOpcode);
+      case 0xa:
+        return this._Annn(parsedOpcode);
+      case 0xc:
+        const randomNumber = Math.floor(Math.random() * 256);
+        return this._Cxkk(parsedOpcode, randomNumber);
+      case 0xd:
+        return this._Dxyn(parsedOpcode);
+      case 0xe:
+        switch (parsedOpcode.kk) {
+          case 0x00a1:
+            return this._ExA1(parsedOpcode);
+          case 0x009e:
+            return this._Ex9E(parsedOpcode);
+        }
+      case 0xf:
+        switch (parsedOpcode.kk) {
+          case 0x0015:
+            return this._Fx15(parsedOpcode);
+          case 0x0007:
+            return this._Fx07(parsedOpcode);
+          case 0x001e:
+            return this._Fx1E(parsedOpcode);
+          case 0x0033:
+            return this._Fx33(parsedOpcode);
+          case 0x0018:
+            return this._Fx18(parsedOpcode);
         }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));
