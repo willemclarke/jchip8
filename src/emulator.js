@@ -66,23 +66,6 @@ class Emulator {
       `delayT: ${this.delayTimer.toString(16)}`,
     );
   }
-
-  _Annn(parsedOpcode) {
-    this.iRegister = parsedOpcode.nnn;
-    this.programCounter += 2;
-  }
-
-  _2nnn(parsedOpcode) {
-    this.stackPointer += 1;
-    this.stack.push(this.programCounter);
-    this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
-  }
-
-  _6xkk(parsedOpcode) {
-    this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
-    this.programCounter += 2;
-  }
-
   _00E0() {
     for (let x = 0; x < this.screen.length; x++) {
       for (let y = 0; y < this.screen.length; y++) {
@@ -97,57 +80,14 @@ class Emulator {
     this.stackPointer -= 1;
   }
 
-  _7xkk(parsedOpcode) {
-    this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
-    this.programCounter += 2;
+  _1nnn(parsedOpcode) {
+    this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
   }
 
-  /*
-    Dxyn - DRW Vx, Vy, nibble
-    Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-    The interpreter reads n bytes from memory, starting at the address stored in I. 
-    These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). 
-    Sprites are XORed onto the existing screen. If this causes any pixels to be erased, 
-    VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it 
-    is outside the coordinates of the display, it wraps around to the opposite side of the 
-    screen. See instruction 8xy3 for more information on XOR, and section 2.4, 
-    Display, for more information on the Chip-8 screen and sprites.
-  */
-
-  _Dxyn(parsedOpcode) {
-    var row,
-      col,
-      sprite,
-      width = 8,
-      height = parsedOpcode.n;
-
-    this.vRegister[0xf] = 0;
-
-    for (row = 0; row < height; row++) {
-      sprite = this.memory[this.iRegister + row];
-
-      for (col = 0; col < width; col++) {
-        if ((sprite & 0x80) > 0) {
-          this.screen[this.vRegister[parsedOpcode.y] + row][this.vRegister[parsedOpcode.x] + col] = 1;
-
-          const int_x = (this.vRegister[parsedOpcode.x] + col) & 0xff;
-          const int_y = (this.vRegister[parsedOpcode.y] + row) & 0xff;
-
-          const previousPixel = this.screen[int_y][int_x];
-          const newPixel = previousPixel ^ ((sprite & (1 << (7 - i))) != 0); // XOR
-
-          this.screen[int_y][int_x] = 1;
-
-          if (previousPixel && !newPixel) {
-            this.vRegister[0xf] = 0x01;
-          }
-        }
-
-        sprite = sprite << 1;
-      }
-    }
-
-    this.programCounter += 2;
+  _2nnn(parsedOpcode) {
+    this.stackPointer += 1;
+    this.stack.push(this.programCounter);
+    this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
   }
 
   _3xkk(parsedOpcode) {
@@ -158,16 +98,6 @@ class Emulator {
     }
   }
 
-  _1nnn(parsedOpcode) {
-    this.programCounter = parsedOpcode.nnn; // testing without + 2 after parsedOpcode.nnn
-  }
-
-  _Cxkk(parsedOpcode, randomNumber) {
-    const vxOperation = randomNumber & parsedOpcode.kk;
-    this.vRegister[parsedOpcode.x] = vxOperation; // or this.vRegister = this.vRegister.push(vxOperation)
-    this.programCounter += 2;
-  }
-
   _4xkk(parsedOpcode) {
     if (this.vRegister[parsedOpcode.x] != parsedOpcode.kk) {
       this.programCounter += 4;
@@ -176,49 +106,15 @@ class Emulator {
     }
   }
 
-  _Ex9E(parsedOpcode) {
-    if (this.keyInput[this.vRegister[parsedOpcode.x]]) {
-      this.programCounter += 4;
-    } else {
-      this.programCounter += 2;
-    }
-  }
+  _5xy0(parsedOpcode) {}
 
-  _ExA1(parsedOpcode) {
-    if (!this.keyInput[this.vRegister[parsedOpcode.x]]) {
-      this.programCounter += 4;
-    } else {
-      this.programCounter += 2;
-    }
-  }
-
-  _Fx07(parsedOpcode) {
-    this.vRegister[parsedOpcode.x] = this.delayTimer;
+  _6xkk(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
     this.programCounter += 2;
   }
 
-  _Fx15(parsedOpcode) {
-    this.delayTimer = this.vRegister[parsedOpcode.x];
-    this.programCounter += 2;
-  }
-
-  _Fx18(parsedOpcode) {
-    this.soundTimer = this.vRegister[parsedOpcode.x];
-    this.programCounter += 2;
-  }
-
-  _Fx1E(parsedOpcode) {
-    this.iRegister = this.iRegister + this.vRegister[parsedOpcode.x];
-    this.programCounter += 2;
-  }
-
-  _Fx33(parsedOpcode) {
-    const hundreds = Math.floor(this.vRegister[parsedOpcode.x] / 100);
-    const tens = Math.floor((this.vRegister[parsedOpcode.x] % 100) / 10);
-    const ones = (this.vRegister[parsedOpcode.x] % 100) % 10;
-    this.memory[this.iRegister] = hundreds;
-    this.memory[this.iRegister + 1] = tens;
-    this.memory[this.iRegister + 2] = ones;
+  _7xkk(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = (this.vRegister[parsedOpcode.x] + parsedOpcode.kk) & 0xff;
     this.programCounter += 2;
   }
 
@@ -295,6 +191,109 @@ class Emulator {
       this.programCounter += 2;
     }
   }
+
+  _Annn(parsedOpcode) {
+    this.iRegister = parsedOpcode.nnn;
+    this.programCounter += 2;
+  }
+
+  _Bnnn(parsedOpcode) {}
+
+  _Cxkk(parsedOpcode, randomNumber) {
+    const vxOperation = randomNumber & parsedOpcode.kk;
+    this.vRegister[parsedOpcode.x] = vxOperation; // or this.vRegister = this.vRegister.push(vxOperation)
+    this.programCounter += 2;
+  }
+
+  _Dxyn(parsedOpcode) {
+    var row,
+      col,
+      sprite,
+      width = 8,
+      height = parsedOpcode.n;
+
+    this.vRegister[0xf] = 0;
+
+    for (row = 0; row < height; row++) {
+      sprite = this.memory[this.iRegister + row];
+
+      for (col = 0; col < width; col++) {
+        if ((sprite & 0x80) > 0) {
+          this.screen[this.vRegister[parsedOpcode.y] + row][this.vRegister[parsedOpcode.x] + col] = 1;
+
+          const int_x = (this.vRegister[parsedOpcode.x] + col) & 0xff;
+          const int_y = (this.vRegister[parsedOpcode.y] + row) & 0xff;
+
+          const previousPixel = this.screen[int_y][int_x];
+          const newPixel = previousPixel ^ ((sprite & (1 << (7 - i))) != 0); // XOR
+
+          this.screen[int_y][int_x] = 1;
+
+          if (previousPixel && !newPixel) {
+            this.vRegister[0xf] = 0x01;
+          }
+        }
+
+        sprite = sprite << 1;
+      }
+    }
+
+    this.programCounter += 2;
+  }
+
+  _Ex9E(parsedOpcode) {
+    if (this.keyInput[this.vRegister[parsedOpcode.x]]) {
+      this.programCounter += 4;
+    } else {
+      this.programCounter += 2;
+    }
+  }
+
+  _ExA1(parsedOpcode) {
+    if (!this.keyInput[this.vRegister[parsedOpcode.x]]) {
+      this.programCounter += 4;
+    } else {
+      this.programCounter += 2;
+    }
+  }
+
+  _Fx07(parsedOpcode) {
+    this.vRegister[parsedOpcode.x] = this.delayTimer;
+    this.programCounter += 2;
+  }
+
+  _Fx0A(parsedOpcode) {}
+
+  _Fx15(parsedOpcode) {
+    this.delayTimer = this.vRegister[parsedOpcode.x];
+    this.programCounter += 2;
+  }
+
+  _Fx18(parsedOpcode) {
+    this.soundTimer = this.vRegister[parsedOpcode.x];
+    this.programCounter += 2;
+  }
+
+  _Fx1E(parsedOpcode) {
+    this.iRegister = this.iRegister + this.vRegister[parsedOpcode.x];
+    this.programCounter += 2;
+  }
+
+  _Fx29(parsedOpcode) {}
+
+  _Fx33(parsedOpcode) {
+    const hundreds = Math.floor(this.vRegister[parsedOpcode.x] / 100);
+    const tens = Math.floor((this.vRegister[parsedOpcode.x] % 100) / 10);
+    const ones = (this.vRegister[parsedOpcode.x] % 100) % 10;
+    this.memory[this.iRegister] = hundreds;
+    this.memory[this.iRegister + 1] = tens;
+    this.memory[this.iRegister + 2] = ones;
+    this.programCounter += 2;
+  }
+
+  _Fx55(parsedOpcode) {}
+
+  _Fx65(parsedOpcode) {}
 
   executeOpcode(parsedOpcode) {
     switch (parsedOpcode.i) {

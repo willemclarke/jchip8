@@ -2,7 +2,7 @@ const Emulator = require('../src/emulator.js');
 const { parseOpcode } = require('../src/utils.js');
 const _ = require('lodash');
 
-test('0xAnnn', () => {
+test('Annn', () => {
   const emulator = new Emulator();
   const parsedOpcode = parseOpcode(0xa2b4);
   const initialState = _.cloneDeep(emulator);
@@ -12,7 +12,7 @@ test('0xAnnn', () => {
   expect(emulator.programCounter).toBe(initialState.programCounter + 2);
 });
 
-test('Ox2nnn', () => {
+test('2nnn', () => {
   const emulator = new Emulator();
   const initialState = _.cloneDeep(emulator);
   const parsedOpcode = parseOpcode(0x2123);
@@ -23,7 +23,7 @@ test('Ox2nnn', () => {
   expect(emulator.programCounter).toBe(parsedOpcode.nnn); //removed + 2 after .nnn
 });
 
-test('Ox6xkk', () => {
+test('6xkk', () => {
   const emulator = new Emulator();
   const initialState = _.cloneDeep(emulator);
   const parsedOpcode = parseOpcode(0x6123);
@@ -33,18 +33,20 @@ test('Ox6xkk', () => {
   expect(emulator.programCounter).toBe(initialState.programCounter + 2);
 });
 
-test('0x00EE', () => {
-  const emulator = new Emulator();
-  const parsedOpcode = parseOpcode(0x00ee);
-  emulator.stack = [0x200];
-  const initialState = _.cloneDeep(emulator);
-  emulator._00EE();
+describe('00 series opcodes', () => {
+  test('00EE', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x00ee);
+    emulator.stack = [0x200];
+    const initialState = _.cloneDeep(emulator);
+    emulator._00EE();
 
-  expect(emulator.programCounter).toBe(initialState.stack.slice(-1)[0] + 2);
-  expect(emulator.stackPointer).toBe(initialState.stackPointer - 1);
+    expect(emulator.programCounter).toBe(initialState.stack.slice(-1)[0] + 2);
+    expect(emulator.stackPointer).toBe(initialState.stackPointer - 1);
+  });
 });
 
-test('0x7xkk', () => {
+test('7xkk', () => {
   const emulator = new Emulator();
   const parsedOpcode = parseOpcode(0x7123);
   const initialState = _.cloneDeep(emulator);
@@ -55,7 +57,7 @@ test('0x7xkk', () => {
 });
 
 describe('3xkk - Both outcomes', () => {
-  test('0x3xkk - if x = kk', () => {
+  test('3xkk - if x = kk', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x3123);
     emulator.vRegister[0x1] = 0x23;
@@ -65,7 +67,7 @@ describe('3xkk - Both outcomes', () => {
     expect(emulator.programCounter).toBe(initialState.programCounter + 4);
   });
 
-  test('0x3xkk - if x != kk', () => {
+  test('3xkk - if x != kk', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x3123);
     emulator.vRegister[0x1] = 0x21;
