@@ -60,7 +60,7 @@ describe('4xkk - Both outcomes', () => {
   test('4xkk - if x != kk', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x4123);
-    emulator.vRegister[0x1] = 0x21;
+    emulator.vRegister[parsedOpcode.x] = 0x4;
     const initialState = _.cloneDeep(emulator);
     emulator._4xkk(parsedOpcode);
 
@@ -70,7 +70,7 @@ describe('4xkk - Both outcomes', () => {
   test('4xkk - if x === kk', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0x4123);
-    emulator.vRegister[0x1] = 0x23;
+    emulator.vRegister[parsedOpcode.x] = 0x23;
     const initialState = _.cloneDeep(emulator);
     emulator._4xkk(parsedOpcode);
 
@@ -78,7 +78,29 @@ describe('4xkk - Both outcomes', () => {
   });
 });
 
-test('5xy0', () => {});
+describe('5xy0 --- Both outcomes', () => {
+  test('5xy0 --- Vx === Vy, PC + 4', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x5340);
+    emulator.vRegister[parsedOpcode.x] = 0x4;
+    emulator.vRegister[parsedOpcode.y] = 0x4;
+    const initialState = _.cloneDeep(emulator);
+    emulator._5xy0(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(initialState.programCounter + 4);
+  });
+
+  test('5xy0 --- Vx != Vy, PC + 2', () => {
+    const emulator = new Emulator();
+    const parsedOpcode = parseOpcode(0x5340);
+    emulator.vRegister[parsedOpcode.x] = 0x4;
+    emulator.vRegister[parsedOpcode.y] = 0x3;
+    const initialState = _.cloneDeep(emulator);
+    emulator._5xy0(parsedOpcode);
+
+    expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+  });
+});
 
 test('6xkk', () => {
   const emulator = new Emulator();

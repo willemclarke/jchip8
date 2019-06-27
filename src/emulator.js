@@ -106,7 +106,13 @@ class Emulator {
     }
   }
 
-  _5xy0(parsedOpcode) {}
+  _5xy0(parsedOpcode) {
+    if (this.vRegister[parsedOpcode.x] === this.vRegister[parsedOpcode.y]) {
+      this.programCounter += 4;
+    } else {
+      this.programCounter += 2;
+    }
+  }
 
   _6xkk(parsedOpcode) {
     this.vRegister[parsedOpcode.x] = parsedOpcode.kk;
