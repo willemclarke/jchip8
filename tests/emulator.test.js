@@ -311,8 +311,7 @@ describe('8 Series Opcodes', () => {
 
   test('Bnnn', () => {
     const emulator = new Emulator();
-    const parsedOpcode = parseOpcode(0xb123); // = 291 === 123
-    const initialState = _.cloneDeep(emulator);
+    const parsedOpcode = parseOpcode(0xb123);
     emulator.vRegister[0x0] = 0x33;
     console.log(emulator.vRegister[0x0]);
     console.log(parsedOpcode.nnn);

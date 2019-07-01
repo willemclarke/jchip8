@@ -66,6 +66,7 @@ class Emulator {
       `delayT: ${this.delayTimer.toString(16)}`,
     );
   }
+
   _00E0() {
     for (let x = 0; x < this.screen.length; x++) {
       for (let y = 0; y < this.screen.length; y++) {
