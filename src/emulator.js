@@ -288,7 +288,10 @@ class Emulator {
     this.programCounter += 2;
   }
 
-  _Fx29(parsedOpcode) {}
+  _Fx29(parsedOpcode) {
+    this.iRegister = this.vRegister[parsedOpcode.x] * 5;
+    this.programCounter += 2;
+  }
 
   _Fx33(parsedOpcode) {
     const hundreds = Math.floor(this.vRegister[parsedOpcode.x] / 100);
@@ -355,23 +358,25 @@ class Emulator {
         return this._Dxyn(parsedOpcode);
       case 0xe:
         switch (parsedOpcode.kk) {
-          case 0x00a1:
-            return this._ExA1(parsedOpcode);
           case 0x009e:
             return this._Ex9E(parsedOpcode);
+          case 0x00a1:
+            return this._ExA1(parsedOpcode);
         }
       case 0xf:
         switch (parsedOpcode.kk) {
-          case 0x0015:
-            return this._Fx15(parsedOpcode);
           case 0x0007:
             return this._Fx07(parsedOpcode);
-          case 0x001e:
-            return this._Fx1E(parsedOpcode);
-          case 0x0033:
-            return this._Fx33(parsedOpcode);
+          case 0x0015:
+            return this._Fx15(parsedOpcode);
           case 0x0018:
             return this._Fx18(parsedOpcode);
+          case 0x001e:
+            return this._Fx1E(parsedOpcode);
+          case 0x0029:
+            return this._Fx29(parsedOpcode);
+          case 0x0033:
+            return this._Fx33(parsedOpcode);
         }
       default:
         throw new Error('Unknown opcode: ' + JSON.stringify(parsedOpcode));

@@ -313,8 +313,6 @@ describe('8 Series Opcodes', () => {
     const emulator = new Emulator();
     const parsedOpcode = parseOpcode(0xb123);
     emulator.vRegister[0x0] = 0x33;
-    console.log(emulator.vRegister[0x0]);
-    console.log(parsedOpcode.nnn);
     emulator._Bnnn(parsedOpcode);
 
     expect(emulator.programCounter).toBe(parsedOpcode.nnn + emulator.vRegister[0x0]);
@@ -423,6 +421,17 @@ describe('8 Series Opcodes', () => {
       emulator._Fx1E(parsedOpcode);
 
       expect(emulator.iRegister).toBe(initialState.iRegister + emulator.vRegister[parsedOpcode.x]);
+      expect(emulator.programCounter).toBe(initialState.programCounter + 2);
+    });
+
+    test('Fx29', () => {
+      const emulator = new Emulator();
+      const parsedOpcode = parseOpcode(0xf129);
+      const initialState = _.cloneDeep(emulator);
+      emulator.vRegister[parsedOpcode.x] = 0x2;
+      emulator._Fx29(parsedOpcode);
+
+      expect(emulator.iRegister).toBe(emulator.vRegister[parsedOpcode.x] * 5);
       expect(emulator.programCounter).toBe(initialState.programCounter + 2);
     });
 
