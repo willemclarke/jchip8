@@ -12,7 +12,7 @@
   "author": "Willem Clarke",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.13"
   },
   "devDependencies": {
     "serve": "^11.0.2",
